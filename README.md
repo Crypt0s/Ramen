@@ -1,4 +1,4 @@
-Ramen
+Ramen (Beta)
 ======
 Ramen is a Python Project that aims to discover all the files on your network.  Specifically, Ramen supports CIFS/SMB file share discovery, enumeration, and attribute storage and retrieval.
 
@@ -87,3 +87,6 @@ Steps:
 ```
 10) browse to http://[yourcomputerip]:8080/scanner/
 
+Known Issues
+============
+* Sometimes it doesn't stop -- it's an issues with the multiprocessing queue.qsize() function being an approximation that is wildly off -- I'm working on another way
