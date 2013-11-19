@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <style type='text/css'>
+            .result_table{
+
+            }
+            .user{
+                padding-left:25px;
+                color: rgb(163, 39, 0);
+            }
+            .file{
+
+            }
+            .permission{
+                color: darkblue;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- {{request}} --><br/>
+            <table class='result_table'>
+        {% for result in results %}
+                <tr><td class='file'>{{ result.0.filename }}</td></tr>
+            {% for perm_tuple in result.1 %}
+                <tr><td class='user'>{{ perm_tuple.0.username }}</td><td class='permission'>{{ perm_tuple.1.permission }}</td></tr>
+            {% endfor %}
+        {% endfor %}
+            </table><br/>
+
+    </body>
+</html>

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/doc
+END
+cifs.upcall.8.xml
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/doc/cifs.upcall.8.xml
+END
+mount.cifs.8.xml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/doc/mount.cifs.8.xml
+END
+linux-cifs-client-guide.odt
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/doc/linux-cifs-client-guide.odt
+END
