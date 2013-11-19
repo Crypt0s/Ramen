@@ -1,11 +1,37 @@
-Requirements:
+Ramen
+======
+Ramen is a Python Project that aims to discover all the files on your network.  Specifically, Ramen supports CIFS/SMB file share discovery, enumeration, and attribute storage and retrieval.
 
+In the future, Ramen will support as many file types as there are network file systems.
+
+Features
+=======
+* Storage of file attributes (user permissions, filename, path right now, more to come)
+* Automated discovery and enumeration across netblocks
+* A User Interface with which to retrieve stored file/file information
+* Multi-threaded _fast_ operation
+
+In-Progress
+===========
+1. File-type actions
+2. File Timestamp storage
+3. User plugins
+4. Additional Network File System Support
+5. Anonymous access
+
+Install Procedures
+===================
+Requirements:
+------------
+```
 build-essential
 python-devel
 samba-winbind-devel
 automake
+```
 
 Steps:
+-----
 1) install:
 ```
 	libsmbclient
