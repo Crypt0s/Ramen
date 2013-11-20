@@ -10,13 +10,15 @@
 #
 
 import multiprocessing, threading, os, settings,logging,random
-
 from multiprocessing import Pool,Queue
 from multiprocessing.pool import ThreadPool
 import ldap,pdb
 import psycopg2
 import utils
 from cifsacl import *
+from utils import fileattr
+        
+
 
 def folder_thread(folder_queue):
     queue = multiprocessing.Queue()
@@ -113,17 +115,22 @@ def scanprocess(queue):
         lid = cursor.fetchone()[0]        
     
         try:
+            result_array = []
             # Store each file and it's properties 
             for file in files:
                 fullpath = path+'/'+file
                 # Get Permissions and SIDs from AD, then resolve the SID into Canonical Names
+                # TODO: This sometimes fails - make it recover nicely from this.
                 perms = utils.resolve(ad,getfacl(fullpath))
                 # Store filename and location
                 cursor.execute('SELECT fid FROM files where filename=%(filename)s and lid=%(lid)s',{'lid':lid,'filename':fullpath})
                 if cursor.rowcount == 0:
                     cursor.execute('INSERT INTO files values(%(lid)s,%(filename)s) RETURNING fid',{'lid':lid,'filename':fullpath})
                 fid = cursor.fetchone()[0]
-    
+
+                result_array.append(fileattr(fullpath,os.stat(fullpath),perms))
+
+                # Store the perms
                 # Store file permissions and usernames
                 for perm in perms:
                     if perms == []:
@@ -141,8 +148,28 @@ def scanprocess(queue):
                     cursor.execute('SELECT * FROM permissions WHERE uid = %(uid)s AND permission=%(permission)s AND fid=%(fid)s',{'permission':perm[1]+'/'+perm[2],'fid':fid,'uid':uid})
                     if cursor.rowcount == 0:
                         cursor.execute('INSERT INTO permissions VALUES(%(uid)s,%(permission)s,%(fid)s)',{'permission':perm[1]+'/'+perm[2],'fid':fid,'uid':uid})
-                        
-    
+                 
+                # Plugins loading area
+                # Actions
+                for module in actions:
+                    try:
+                        [module.action(attr) for attr in result_array]
+                    except:
+                        print "Action failed"
+                        import traceback
+                        print traceback.format_exc()
+
+                # Extensions    
+                for attr in result_array:
+                    for module in extensions:
+                        try:
+                            if module.__match__(attr):
+                                module.action(attr)
+                        except:
+                            print "Extension Failed."
+                            import traceback
+                            print traceback.format_exc()
+
         except:
             print "Something weird happened"
             import traceback
@@ -168,6 +195,14 @@ if __name__ == '__main__':
     folder_queue = []
     mount_queue = []
     share_list = {}
+    actions = []
+    extensions = []
+
+    print "Importing actions"
+    actions = utils.loadmodules('plugins/actions')
+
+    print "Importing extensions"
+    extensions = utils.loadmodules('plugins/extensions')
 
     # Logging
     multiprocessing.log_to_stderr()
