@@ -125,3 +125,42 @@ def umount(location):
         return False
     return True
 
+def loadmodules(folder):
+    dirs = os.listdir(folder)
+    # recursive load any subdirectories
+    subdirs = []
+    function_array = []
+    # Make sure the init.py is there, marking that the folder is a module
+    if '__init__.py' not in dirs:
+        return None
+    # Load sub-modules in * fashion
+    for item in dirs:
+        if os.path.isdir(os.path.abspath(folder+'/'+item)):
+            dirs.remove(item)
+            function_array += loadmodules(folder+'/'+item)
+        else:
+            # Don't try to import pyc or init files.
+            split = item.split('.')
+            name = split[0]
+            extension = split[-1]
+            if extension == 'pyc' or name == '__init__':
+                pass
+            elif extension == 'py':
+                folder = folder.replace(os.sep,'.')
+                mod = __import__(folder+'.'+name)
+                for sub in folder.split('.')[1:]:
+                    mod = getattr(mod,sub)
+                funct = getattr(mod,name)
+                function_array.append(funct)
+    # Return an array of loaded module objects
+    return function_array
+
+class fileattr:
+    def __init__(self,fullpath,attr,perms):
+        self.perms = perms
+        self.ctime = attr.st_ctime
+        self.atime = attr.st_atime
+        self.mtime = attr.st_mtime
+        self.size = attr.st_size
+        self.path = fullpath
+        self.filename = fullpath.split('/')[-1:][0]
