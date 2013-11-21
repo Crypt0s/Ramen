@@ -1,0 +1,25 @@
+Writing Plugins
+
+== All Plugins ==
+ * Are considered enabled if in the plugin folder(s)
+ * You are expected to provide threadsafe code
+ * Each scanprocess process could possibly execute your plugin simultaneously
+ * Scanprocesses don't do anything with the returned values of plugins, they just pass off a copy of themselves to the thread
+ * The longer the plugin task takes, the bigger the backlog will get and the slower the scanner will run
+ * Make your plugin return as possible -- if you don't need to md5 hash an _entire_ file, then dont.
+
+-- Extensions --
+ * Selective
+ * Based on some measurable file attribute (size,perms,extension,path,ect...)
+
+-- Actions --
+ * Performed on all files
+
+A bad example is a plugin that writes to a single text file without any locks.
+A good example is a plugin that writes to unique text files every time.
+
+A bad example of a plugin is a plugin that reads every byte from a large file
+A good example of a plugin is a plugin that uses a regex or reads portions of a large file
+
+A good example of an action is a hashing function
+A good example of an extension is downloading a certain file extension for later analysis
