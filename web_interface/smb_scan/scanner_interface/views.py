@@ -22,6 +22,7 @@ def index(request):
 
 def search(request):
     print 'hii'
+    results = None
     try:
         if request.POST['location'] is not u'':
             print "Location specced"
@@ -45,12 +46,21 @@ def search(request):
             # Regular IP Address support
             else:
                 lids = [x.lid for x in Shares.objects.filter(server__exact=request.POST['location'])]
+
+            # Handle the LID
             results = Files.objects.filter(filename__iregex=request.POST['filename'],lid__in=lids)
-            print "Results1 : " + str(len(results))
+            #print "Results1 : " + str(len(results))
+
         # No location spec'd
-        else:
+#        else:
+#            results = Files.objects.filter(filename__iregex=request.POST['filename'])
+#            print "Results2 : " + str(len(results))
+
+        if request.POST['filename'] is not u'' and results is not None:
             results = Files.objects.filter(filename__iregex=request.POST['filename'])
-            print "Results2 : " + str(len(results))
+            print "results2: " + str(len(results))
+        else:
+            results = Files.objects.all()
 
         if request.POST['username'] is not u'': #!= [u'']: #t.POST['username'] != u'':
             results = results.filter(permissions__uid__in=Users.objects.filter(username__iregex=request.POST['username']))

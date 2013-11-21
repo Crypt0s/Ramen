@@ -11,13 +11,18 @@ Features
 * A User Interface with which to retrieve stored file/file information
 * Multi-threaded _fast_ operation
 
+Plugins
+=======
+* Included samples md5hash files
+* Password finder included in box
+* Move plugins from inactive_plugins to plugins folder either with cp or mv.
+* PLUGINS.txt contains instructions/guides for writing your own
+
 In-Progress
 ===========
-1. File-type actions
-2. File Timestamp storage
-3. User plugins
-4. Additional Network File System Support
-5. Anonymous access
+1. File Timestamp storage
+2. Additional Network File System Support
+3. Anonymous access
 
 Install Procedures
 ===================
