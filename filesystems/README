@@ -1,0 +1,12 @@
+#!/usr
+
+This folder contains the different file access methods with which Ramen can enumerate files.
+There's an interface contained in fs.py that all file system access classes are expected to follow.
+
+If you don't have the ability in a filesystem to perform one of the functions of the interface, you'll have to have the function return some dummy value (None).  Ramen should be able to handle that.
+
+For things like HTTP file systems (For scraping purposes) you'd create a new filesystem with access methods to the API.
+
+Be aware that Ramen may quickly overwhelm small webservices or rate-limited API's so take that into account when writing the code -- have sleep calls in the methods to prevent overly-many calls locking out your account.
+
+
