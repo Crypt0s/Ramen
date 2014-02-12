@@ -100,3 +100,7 @@ class target:
         # send itself to the filesystem handler validation subroutine for validation
         # return the result to the requester (probably main()) so that the target can be deleted from the list.
         return self.filesystem.validate(self)
+
+    def tostring(self)
+        return self.ip+' - '+str(self.filesystem)+' '+self.info
+

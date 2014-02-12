@@ -1,7 +1,7 @@
 import ldap,settings,socket,smbc,os,struct
 from cifsacl import *
 from subprocess import call
-
+import pdb
 def list_shares(server):
     found_shares = {}
     ctx = smbc.Context()
@@ -143,7 +143,8 @@ def loadmodules(folder):
             split = item.split('.')
             name = split[0]
             extension = split[-1]
-            if extension == 'pyc' or name == '__init__':
+            # Todo: load pyc files so we don't have to recompile!
+            if extension == 'pyc' or name == '__init__' or name == None:
                 pass
             elif extension == 'py':
                 folder = folder.replace(os.sep,'.')

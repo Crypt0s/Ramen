@@ -1,6 +1,9 @@
 #!/usr/bin/python
 import pdb
 
+# This should match an nmap service name.
+product = 'test'
+
 class filesystem:
 
     def __init__(self,ip,uri,username,password):

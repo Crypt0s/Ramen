@@ -93,8 +93,36 @@ def scanprocess(queue):
             exit(1)
         ## END DB CODE ##########################################################################################################################################################
 
-        # Scan the folder
-        walker = targetobj.filesystem.walk(folder)
+        # Scan the target
+        # TODO: put the target info into the DB here
+        print target.tostring()
+
+        # build the state tree
+        # walker.next() returns ('folderpath',[files,in,that,folder])
+        walker = targetobj.filesystem.walk()        
+
+        
+        try:
+            # grab the next batch of files from the next folder
+            folder,files = walker.next()
+
+            # stat the folder and save it
+            folderstat = targetobj.filesystem.stat(folder)
+
+            # stat the files in that folder.
+            for file in files:            
+                filestat = targetobj.filesystem.stat(file)
+        # we ran out of folder objects
+        except StopIteration:
+            print "finished target " + targetobj.tostring()
+
+        # something else happend
+        except:
+            print "we encountered an error scanning " + targetobj.tostring()
+
+
+
+        # "folder" objects -- this is not going to fit every fs context is it?
         try:
             current_directory = walker.next()
         except:
