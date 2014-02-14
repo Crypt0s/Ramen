@@ -10,7 +10,7 @@
 #   Targeting.py is the targeting subsystem for Ramen.  Basically, it determines which file system to use based on user input or autodetection
 #   This code parses both the user input in the targeting file and selects the correct filesystem with which to scan the target
 #
-
+import pdb
 import utils
 import settings
 
@@ -18,7 +18,7 @@ class targeter:
     # Info can be anything additional information that the target has that needs to be passed into it's filesystem handler in order to function properly.
     # A good example would be the folder for WebDAV or a URL for a website.
     def __init__(self):
-        self.scanner = nmap.PortScanner()
+        #self.scanner = nmap.PortScanner()
     
         # Load a list of filesystem names (from NMAP) and their handlers into a dictionary
         self.scannables = {}
@@ -49,7 +49,7 @@ class targeter:
 
             # if there are multiple spec'd
             elif ',' in split_atarget[1]:
-                for fs in split_atarget[1].split(',')
+                for fs in split_atarget[1].split(','):
                     my_fs = self.get_filesystem_handler(fs)
                     fsobj = my_fs[0]
                     fsinfo = my_fs[1]
@@ -70,7 +70,7 @@ class targeter:
         
     # Targeting subsystem will ensure that each target object has a filesystem with it.
     def get_filesystem_handler(self,fsname=None):
-
+        pdb.set_trace()
         # overridden for convenience.  not for looks.
         if fsname == None:
             return self.scannables.keys()
@@ -93,14 +93,15 @@ class target:
     def __init__(self, host, filesystem, info = None):
         self.info = info
         self.host = host
+        self.ports = [] #open ports will be defined by the portscanner later.
         # The filesystem settings and such are set in the settings file -- it's easier that way for now until we have a structured settings python import thing
         self.filesystem = filesystem
 
     def validate(self):
         # send itself to the filesystem handler validation subroutine for validation
         # return the result to the requester (probably main()) so that the target can be deleted from the list.
-        return self.filesystem.validate(self)
+        return self.filesystem.Filesystem.validate(self)
 
-    def tostring(self)
+    def tostring(self):
         return self.ip+' - '+str(self.filesystem)+' '+self.info
 

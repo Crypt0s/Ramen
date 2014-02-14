@@ -1,1 +1,1 @@
-10.50.120.122 80 sharepoint
+10.50.120.122 sharepoint

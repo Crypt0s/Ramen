@@ -19,7 +19,7 @@ import utils
 from cifsacl import *
 from utils import fileattr
 import targeting        
-
+import portscan
 
 def folder_thread(target_queue):
     queue = multiprocessing.Queue()
@@ -253,10 +253,12 @@ if __name__ == '__main__':
         exit()
     with open(settings.TARGET_LIST,'r') as target_list:
         targets = target_list.readlines()
-        if len(targets)>1:
+        if len(targets)<1:
             print "You did not specify anything to scan in your target file."
-    if '/' != settings.MOUNT_LOCATION[-1]:
-        settings.MOUNT_LOCATION = settings.MOUNT_LOCATION+'/'
+
+# We don't do this.
+#    if '/' != settings.MOUNT_LOCATION[-1]:
+#        settings.MOUNT_LOCATION = settings.MOUNT_LOCATION+'/'
 
     #try:
     #    utils.bind_domain()
@@ -280,9 +282,20 @@ if __name__ == '__main__':
     # Parses the targeting file into target objects
     targets = targeting.targeter().parse()
 
+    print "Portscanning Targets"
+    # TODO: this is going to be slow as balls.  Make this fast as hell.
+    # results are saved in the target
+    # Also: throw the targets out if they don't have at least one open port to validate scannable services on.
+    targets = [i for i in targets if portscan.scan(i) is not False]
+
     print "Scanning / Validating Targets"
-    # Validation routine built into the clients
+    # Validation routine built into the clients, uses the open ports detected by the portscanner
     targets = [i for i in targets if i.validate() is not False]
 
+    if len(targets)<1:
+        print "No valid targets - exiting."
+        exit(1)
+
+    # where the magic happens
     print "Scanning targets"
-    folder_thread(valid_targets)
+    folder_thread(targets)

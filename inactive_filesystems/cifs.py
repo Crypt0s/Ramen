@@ -1,13 +1,9 @@
 #!/usr/bin/python
+import smbc
 import pdb
-import imp
 
-# If you need additional settings/setup/passwords/whatever, you set them in a companion settings file found in the fs_settings folder.
-# If one wanted to use the settings from the settings file for Ramen itself, one would specify that file instead of one in fs_settings.
-settings = imp.load_source('settings','../fs_settings/sharepoint_dav.py')
 
-# this should match the human-readable name to be used in the targets.txt file.
-product = 'test'
+products = 'netbios-ssn'
 
 class filesystem:
 
@@ -17,6 +13,47 @@ class filesystem:
         self.uri = uri
         # this is where you'd establish the object that actually allows interface to the file (this file abstracts all the specific methods of that access with these methods known to Ramen)
         self.fs_object = (username,password)
+        self.shares = self.list_shares(ip)
+
+    def list_shares(server):
+        found_shares = {}
+        ctx = smbc.Context()
+        if settings.ANONYMOUS == True:
+            ctx.optionNoAutoAnonymousLogin = False
+        else:
+            ctx.optionNoAutoAnonymousLogin = True
+            # You want to do it this way otherwise things get out of order???
+            cb = lambda se, sh, w, u, p: (settings.DOMAIN, settings.USERNAME, settings.PASSWORD)
+            ctx.functionAuthData = cb
+            server = server.strip()
+            try:
+                entries = ctx.opendir('smb://'+server).getdents()
+                progress = 0
+                for entry in entries:
+                    try:
+                        progress+=1
+                        #print "Progress: " + str(progress/len(entries)*100)
+                        # 3L type is a share
+                        if entry.smbc_type == 3L and "$" not in entry.name:
+                             print entry.name
+                             share = entry.name
+                             if server in found_shares.keys():
+                                found_shares[server].append(share)
+                             else:
+                                 found_shares[server]=[share]
+                    except:
+                        print "Error connecting to " + server
+                        pass
+            except smbc.PermissionError:
+                print "Permission denied"
+                pass
+            except smbc.TimedOutError:
+                print "Server " + server + " Timed Out."
+                pass    
+        return found_shares
+        
+    def getfacl(self):
+        perms = utils.resolve(ad,getfacl(fullpath))
 
     def stat(self,path):
         stat = None # code for returning a tuple like os.stat()
