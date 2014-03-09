@@ -5,9 +5,10 @@
 #The filesystem class(tm)#
 ##########################
 import time
+import persistent
 
-class file:
-    def __init__(self, filename, relpath, stat, perms, target, folder):
+class File(persistent.Persistent):
+    def __init__(self, filename, relpath, stat, target, folder=False):
 
         # simplest - just takes the time right now
         self.scan_date = int(time.time())
