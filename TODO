@@ -1,0 +1,6 @@
+#!/usr
+
+TODO Roadmap:
+
+1. Implement some sort of mid-scan saving
+2. Port Scanning combined with banner-grabbing and filesystem matching to scan, fingerprint and match services to handlers so that users can run the tool without defining specific handlers.
