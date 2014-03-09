@@ -8,17 +8,15 @@
 #   This project is not (officially) affiliated with the open-source project "Noodle-ng", but it's functionality is similar and it helped me come up with a name.
 #   
 #
-from file import file
+from file import File
 import multiprocessing, threading, os, settings,logging,random
 import targeting
 from multiprocessing import Pool,Queue
 from multiprocessing.pool import ThreadPool
-import ldap,pdb
+import pdb
 #import psycopg2
 import ZODB, ZODB.FileStorage
 import utils
-from cifsacl import *
-from utils import fileattr
 import targeting        
 import portscan
 
@@ -189,11 +187,11 @@ if __name__ == '__main__':
     # Parses the targeting file into target objects
     targets = targeting.targeter().parse()
 
-    print "Portscanning Targets"
-    # TODO: this is going to be slow as balls.  Make this fast as hell.
-    # results are saved in the target
-    # Also: throw the targets out if they don't have at least one open port to validate scannable services on.
-    targets = [i for i in targets if portscan.scan(i) is not False]
+    #print "Portscanning Targets"
+    ## TODO: this is going to be slow as balls.  Make this fast as hell.
+    ## results are saved in the target
+    ## Also: throw the targets out if they don't have at least one open port to validate scannable services on.
+    #targets = [i for i in targets if portscan.scan(i) is not False]
 
     print "Scanning / Validating Targets"
     # Validation routine built into the clients, uses the open ports detected by the portscanner

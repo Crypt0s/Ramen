@@ -1,1 +1,1 @@
-10.50.120.122 sharepoint
+127.0.0.1 local_disk

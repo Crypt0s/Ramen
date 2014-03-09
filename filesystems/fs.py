@@ -4,7 +4,7 @@ import imp
 
 # If you need additional settings/setup/passwords/whatever, you set them in a companion settings file found in the fs_settings folder.
 # If one wanted to use the settings from the settings file for Ramen itself, one would specify that file instead of one in fs_settings.
-settings = imp.load_source('settings','../fs_settings/sharepoint_dav.py')
+#settings = imp.load_source('settings','fs_settings/fs.py')
 
 # this should match the human-readable name to be used in the targets.txt file.
 product = 'test'
@@ -25,6 +25,12 @@ class filesystem:
     def open(self,path):
         new_fd = fd(path)
         return new_fd
+
+    def validate(self,target):
+        # Code that verifies that the target is running a filesystem which this handler can handle goes here.
+        # In a nutshell - portscan for open ports, get the header, compare it to what this handles, and then say if the target is able to be interfaced with using this handler.
+
+        return True
 
 #File descriptor class for reasons
 class fd:
