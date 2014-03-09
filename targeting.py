@@ -43,9 +43,8 @@ class targeter:
             if len(split_atarget) == 1:
                 for fs in self.get_filesystem_handler():
                     my_fs = self.get_filesystem_handler(fs)
-                    fsobj = my_fs[0]
-                    fsinfo = my_fs[1]
-                    target_objects.append(target(ip,fsobj,fsinfo))
+                    fsobj = my_fs
+                    target_objects.append(target(ip,fsobj))
 
             # if there are multiple spec'd
             elif ',' in split_atarget[1]:
@@ -53,55 +52,48 @@ class targeter:
                     my_fs = self.get_filesystem_handler(fs)
                     fsobj = my_fs[0]
                     fsinfo = my_fs[1]
-                    target_objects.append(target(ip,fsobj,fsinfo))
+                    target_objects.append(target(ip,fsobj))
 
             # if there is only one spec'd
             else:
                 try:
                     fs = self.get_filesystem_handler(split_atarget[1])
-                    fsobj = fs[0]
-                    fsinfo = fs[1]
+                    fsobj = fs
                 except:
                     print "Didn't understand directive for " + ip + " please examine the config file for errors"
 
-                target_objects.append(target(ip,fsobj,fsinfo))
+                target_objects.append(target(ip,fsobj))
 
         return target_objects
         
     # Targeting subsystem will ensure that each target object has a filesystem with it.
     def get_filesystem_handler(self,fsname=None):
-        pdb.set_trace()
         # overridden for convenience.  not for looks.
         if fsname == None:
             return self.scannables.keys()
         if fsname.lower() in self.scannables.keys():
             filesystem = self.scannables[fsname.lower()]
         # now see if there is any extra information in the settings department...
-        try:
-            settings.fsinfo[product]['INFO_DICT'] = info
-        except:
-            info = None
         # return the filesystem module and info
-        return filesystem,info
+        return filesystem
     # This validates just the current target object -- we need a fast method to quickly validate hundreds of thousands of targets.
     
 class target:
     # host - the url, ip, or host name of the target
     # service - the name of the service that is being targeted (smb, nfs, ftp, http, ect...)
-    # info - additional info that the filesystem object may need (starting folder for smb for example)
     # Filesystem - Filesystem module object.
-    def __init__(self, host, filesystem, info = None):
-        self.info = info
+    def __init__(self, host, filesystem):
+        pdb.set_trace()
         self.host = host
-        self.ports = [] #open ports will be defined by the portscanner later.
+        self.ports = [] # TODO: use ports
         # The filesystem settings and such are set in the settings file -- it's easier that way for now until we have a structured settings python import thing
-        self.filesystem = filesystem
+        self.filesystem = filesystem.filesystem(host)
 
     def validate(self):
         # send itself to the filesystem handler validation subroutine for validation
         # return the result to the requester (probably main()) so that the target can be deleted from the list.
-        return self.filesystem.Filesystem.validate(self)
+        return self.filesystem.validate(self)
 
     def tostring(self):
-        return self.ip+' - '+str(self.filesystem)+' '+self.info
+        return self.host+' - '+str(self.filesystem)
 

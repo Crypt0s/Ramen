@@ -1,20 +1,19 @@
 #!/usr/bin/python
 
+###########################
+#      ~~ Ramen2 ~~
 #
-#   Ramen
+#   Ramen2 is designed to allow users (security researchers, network managers, system administrators) to quickly index network and local filesystems and collect metadata about the files.
+#   Ramen provides a convenient interface that allows users to write POSIX-like Filesystem handlers around network protocols and stores the results in an object database for retrieval and storage.
 #
-#   Ramen is a (mostly) project designed to quickly and efficiently scan fileshares within Active Directory(ies) and map relationships between users and files.
-#   It uses Python, cifsacl bindings, Psycopg2, Postgresql, PySMBC, and calls to shell in order to detect, mount, scan, map, and store servers, files, users, and file permissions.
-#   This project is not (officially) affiliated with the open-source project "Noodle-ng", but it's functionality is similar and it helped me come up with a name.
-#   
-#
+###########################
+
 from file import File
-import multiprocessing, threading, os, settings,logging,random
+import multiprocessing, threading, os, settings, logging, random
 import targeting
-from multiprocessing import Pool,Queue
+from multiprocessing import Pool, Queue
 from multiprocessing.pool import ThreadPool
 import pdb
-#import psycopg2
 import ZODB, ZODB.FileStorage
 import utils
 import targeting        
@@ -69,12 +68,12 @@ def scanprocess(queue):
         try:
             # the target is a tuple (targetobject,folder)
             target = queue.get(True,5)
-            targetobj = target[0]
-            folder = target[1]
+            # targetobj = target[0]
+            # folder = target[1]
         except:
             print "No work."
             exit(0)
-        print str(name) +": Got some work : " + target
+        print str(name) +": Got some work : "
 
         # Scan the target
         # TODO: put the target info into the DB here
@@ -82,7 +81,9 @@ def scanprocess(queue):
 
         # build the state tree
         # walker.next() returns ('folderpath',[files,in,that,folder])
-        walker = targetobj.filesystem.walk()
+
+        # We should always start with the root - /
+        walker = target.filesystem.walk('/') 
         
         try:
             # grab the next batch of files from the next folder
@@ -104,7 +105,7 @@ def scanprocess(queue):
                 path = path[parentfolder]
 
             # stat the folder and save it
-            folderstat = targetobj.filesystem.stat(folder)
+            folderstat = target.filesystem.stat(folder)
             folderobj = File(folder,relpath,folderstat,target,True)
             
             # store this relative path thusly
@@ -117,16 +118,18 @@ def scanprocess(queue):
 
             # stat the files in that folder.
             for file in files:
-                filestat = targetobj.filesystem.stat(fullpath+file)
+                filestat = target.filesystem.stat(fullpath+file)
                 # this file is in the folder we just found the position of with folderobj, so we can set its relpath to the folder object.
                 fileobj = File(file, folderobj, filestat, target, folder)
                 root[target][path].append(fileobj)
 
         # we ran out of folder objects
         except StopIteration:
-            print "finished target " + targetobj.tostring()
+            print "finished target " + target.tostring()
         except:
-            print "we encountered an error scanning " + targetobj.tostring()
+            print "we encountered an error scanning " + target.tostring()
+            import traceback
+            print traceback.format_exc()
 
         # Plugins loading area
         # Actions
@@ -139,15 +142,14 @@ def scanprocess(queue):
                 print traceback.format_exc()
 
         # Extensions    
-        for attr in result_array:
-            for module in extensions:
-                try:
-                    if module.__match__(file):
-                        module.action(file)
-                except:
-                    print "Extension Failed."
-                    import traceback
-                    print traceback.format_exc()
+        for module in extensions:
+            try:
+                if module.__match__(file):
+                    module.action(file)
+            except:
+                print "Extension Failed."
+                import traceback
+                print traceback.format_exc()
 
     print "Gave up looking for work - dying"
     exit(0)
@@ -156,6 +158,7 @@ if __name__ == '__main__':
     target_queue = []
     actions = []
     extensions = []
+    fs_settings = {}
 
     # Settings housekeeping
     if settings.TARGET_LIST is None:
