@@ -59,21 +59,24 @@ def folder_thread(target_queue):
         print "Thought i didn't have anything to do but i was wrong, re-starting"
         folder_thread([queue.get() for i in range(queue.qsize())])
 
-def scanprocess(queue):
+def scanprocess(queue,debug=None):
 
-    # Cute little naming trick for debug only.
-    name = random.randint(0,1000)
-    while queue.qsize()>0:
-        print str(name)+": looking for work"
-        try:
-            # the target is a tuple (targetobject,folder)
-            target = queue.get(True,5)
-            # targetobj = target[0]
-            # folder = target[1]
-        except:
-            print "No work."
-            exit(0)
-        print str(name) +": Got some work : "
+    if debug is None:
+        # Cute little naming trick for debug only.
+        name = random.randint(0,1000)
+        while queue.qsize()>0:
+            print str(name)+": looking for work"
+            try:
+                # the target is a tuple (targetobject,folder)
+                target = queue.get(True,5)
+                # targetobj = target[0]
+                # folder = target[1]
+            except:
+                print "No work."
+                exit(0)
+            print str(name) +": Got some work : "
+    else:
+        target = debug
 
         # Scan the target
         # TODO: put the target info into the DB here
@@ -83,8 +86,15 @@ def scanprocess(queue):
         # walker.next() returns ('folderpath',[files,in,that,folder])
 
         # We should always start with the root - /
+
+        # Note: So one of the weird things that this framework is going to require the plugin-writers to handle is stuff like drive letters in windows.
+        # Ideally, you'd take this slash in your filesystem handler, know that it's seeking the "My Computer" and return a list of the connected drives
+        # Then, youd let it go to each drive recording the drive letter as another folder in the chain.  That's how i'd do it, anyways.
         walker = target.filesystem.walk('/') 
         
+
+        
+
         try:
             # grab the next batch of files from the next folder
             fullpath,folders,files = walker.next()
@@ -96,6 +106,7 @@ def scanprocess(queue):
             if relpath[0] == "":
                 relpath[0] = '/'
 
+            pdb.set_trace()
             # load the target
             path = root[target]
 
@@ -174,7 +185,7 @@ if __name__ == '__main__':
     storage = ZODB.FileStorage.FileStorage('mydata.fs')
     db = ZODB.DB(storage)
     connection = db.open()
-    root = connection.root
+    root = connection.root()
 
     print "Importing actions"
     actions = utils.loadmodules('plugins/actions')
@@ -203,6 +214,10 @@ if __name__ == '__main__':
     if len(targets)<1:
         print "No valid targets - exiting."
         exit(1)
+
+    #debug mode only remove.
+    for target in targets:
+        scanprocess(None,target)
 
     # where the magic happens
     print "Scanning targets"

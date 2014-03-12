@@ -1,97 +1,37 @@
-Ramen (Beta)
+Ramen2 (Alpha)
 ======
-Ramen is a Python Project that aims to discover all the files on your network.  Specifically, Ramen supports CIFS/SMB file share discovery, enumeration, and attribute storage and retrieval.
+Ramen2 is a Python framework that allows users to utilize community-written network protocol handlers written for the Ramen Project.
+The network protocol handlers allow network protocols and network filesystems to be accessed through a POSIX-like standard filesystem interface.  The project then runs those handlers against a target(s), stores metadata it collects, and runs user/community plugins based on collected attributes.
 
-In the future, Ramen will support as many file types as there are network file systems.
+An example usage of this project would be scanning a netblock for WebDAV, collecting timestamps, author name, file permissions, and path data while opening and running a MD5sum operation over every file with the extension .pst created between the dates of January and March.
+
+Results are stored in an object database for running queries and reports.
 
 Features
-=======
-* Storage of file attributes (user permissions, filename, path right now, more to come)
-* Automated discovery and enumeration across netblocks
-* A User Interface with which to retrieve stored file/file information
-* Multi-threaded _fast_ operation
+========
+* Plugins for each Filesystem
+* Well-defined interface for writing your own protocol/filesystem handlers
+* Automated discovery and enumeration of targets
+* Support for user plugins to do things like search for keywords, get file hashes, run SSDEEP, ect...
 
 Plugins
 =======
-* Included samples md5hash files
-* Password finder included in box
-* Move plugins from inactive_plugins to plugins folder either with cp or mv.
-* PLUGINS.txt contains instructions/guides for writing your own
+* MD5hash
+
+Filesystem Support
+==================
+* Local Disk
+* Sharepoint WebDav
+* WebDav
 
 In-Progress
 ===========
-1. File Timestamp storage
-2. Additional Network File System Support
-3. Anonymous access
+* Web application user interface
 
 Install Procedures
-===================
-Requirements:
-------------
-```
-build-essential
-python-devel
-samba-winbind-devel
-automake
-```
-
-Steps:
------
-1) install:
-```
-	libsmbclient
-	libsmbclient-devel
-	psycopg2
-	postgresql
-	postgresql-server
-	Django (1.5 or above)
-	Python (2.6 or 2.7, not tested w/>3,0)
-	Python-devel
-	pysmbc - https://pypi.python.org/packages/source/p/pysmbc/pysmbc-1.0.13.tar.bz2
-```
-2) go to cifsacl:
-```
-	autoreconf -i
-	./configure
-	make
-	make install
-	python setup.py build
-	python setup.py install
-```
-3) go to pysmbc-1.0.13:
-```
-	make
-	python setup.py build
-	python setup.py install
-```
-4) Configure your settings in settings.py
-
-5) Create the database -- If you're new to postgres, this part will slow you down a little, but it's really easy w/Google.
-```
-	service postgresql start
-	su postgres
-	createdb -p 5432 smb_scan
-```
-6) start the Django application
-```
-	change your postgres server settings:
-		nano web_interface/smb_scan/smb_scan/settings.py
-	cd web_interface/smb_scan
-	python manager syncdb
-	python manager.py runserver 0.0.0.0:8080
-```
-7) be sure to clear your firewall/disable selinux
-```
-	iptables --flush
-```
-8) fill out targets.txt with targets
-
-9) start the scanner
-```
-	python beta.py
-```
-10) browse to http://[yourcomputerip]:8080/scanner/
+==================
+* To be filled when project stabilizes
 
 Known Issues
 ============
-* Sometimes it doesn't stop -- it's an issues with the multiprocessing queue.qsize() function being an approximation that is wildly off -- I'm working on another way
+* To be filled when project stabilizes
