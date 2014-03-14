@@ -90,9 +90,10 @@ def scanprocess(queue,debug=None):
         # Note: So one of the weird things that this framework is going to require the plugin-writers to handle is stuff like drive letters in windows.
         # Ideally, you'd take this slash in your filesystem handler, know that it's seeking the "My Computer" and return a list of the connected drives
         # Then, youd let it go to each drive recording the drive letter as another folder in the chain.  That's how i'd do it, anyways.
+
         walker = target.filesystem.walk('/') 
         
-
+        
         
 
         try:
@@ -106,9 +107,11 @@ def scanprocess(queue,debug=None):
             if relpath[0] == "":
                 relpath[0] = '/'
 
+
+
             pdb.set_trace()
-            # load the target
-            path = root[target]
+            # load the target in "write to root fs tree" mode with w_root.  I provide another way to access if you only want to read.
+            path = target.w_root
 
             # WARNING: HERE BE BUGS (probably)
             # spider down the path options until the end and you will have reached the target folder

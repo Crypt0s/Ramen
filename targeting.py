@@ -78,7 +78,7 @@ class targeter:
         return filesystem
     # This validates just the current target object -- we need a fast method to quickly validate hundreds of thousands of targets.
     
-class target:
+class target(persistent.Persistent):
     # host - the url, ip, or host name of the target
     # service - the name of the service that is being targeted (smb, nfs, ftp, http, ect...)
     # Filesystem - Filesystem module object.
@@ -96,4 +96,3 @@ class target:
 
     def tostring(self):
         return self.host+' - '+str(self.filesystem)
-
