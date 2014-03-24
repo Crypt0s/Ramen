@@ -13,6 +13,7 @@
 import pdb
 import utils
 import settings
+import persistent
 
 class targeter:
     # Info can be anything additional information that the target has that needs to be passed into it's filesystem handler in order to function properly.
@@ -83,7 +84,6 @@ class target(persistent.Persistent):
     # service - the name of the service that is being targeted (smb, nfs, ftp, http, ect...)
     # Filesystem - Filesystem module object.
     def __init__(self, host, filesystem):
-        pdb.set_trace()
         self.host = host
         self.ports = [] # TODO: use ports
         # The filesystem settings and such are set in the settings file -- it's easier that way for now until we have a structured settings python import thing

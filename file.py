@@ -16,7 +16,7 @@ class File(persistent.Persistent):
 
         # stores obj ref to the parent folder of this file
         self.relpath = relpath
-        self.perms = perms
+        #self.perms = perms
         self.target = target
 
         # split out the stat junk later
@@ -28,6 +28,6 @@ class File(persistent.Persistent):
         # store the object in the ZODB automatically
         
 
-    def _tostring(self):
+    def tostring(self):
         #todo: Make this happen
-        return str(self)
+        return self.stat

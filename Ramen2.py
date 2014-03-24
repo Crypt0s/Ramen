@@ -93,6 +93,7 @@ def scanprocess(queue,debug=None):
 
         walker = target.filesystem.walk('/') 
         
+        #save the root
         
         
 
@@ -107,28 +108,31 @@ def scanprocess(queue,debug=None):
             if relpath[0] == "":
                 relpath[0] = '/'
 
-
-
             pdb.set_trace()
             # load the target in "write to root fs tree" mode with w_root.  I provide another way to access if you only want to read.
-            path = target.w_root
+            path = target.filesystem.w_root
 
-            # WARNING: HERE BE BUGS (probably)
             # spider down the path options until the end and you will have reached the target folder
-            for parentfolder in relpath:
-                path = path[parentfolder]
+            # cut the last element off because that's the current file.
+
+            # requires .walk() to go in a linear fashion.  Maybe we can use placeholder objects that have blank objects to represent path placeholders?
+            for p_folder in relpath[:-1]:
+                i = 0
+                for subfolder in path.folders:
+                    i+=1
+                    if subfolder.filename == p_folder:
+                        path = path.folders[i]
 
             # stat the folder and save it
-            folderstat = target.filesystem.stat(folder)
-            folderobj = File(folder,relpath,folderstat,target,True)
-            
-            # store this relative path thusly
-            storage_path = root[target][path]
-            # TODO: come up with way to test for list type or init a list if there isn't already one
-            try:
-                storage_path.append(folderobj)
-            except:
-                storage_path = [folderobj]
+            folderstat = target.filesystem.stat(fullpath)
+            folderobj = File(relpath[-1],path,folderstat,target,True)
+
+            # TODO: We need a way to assign the folders attribute to a folder.
+            folderobj.folders = []
+            for folder in folders:
+                subfolderstat = target.filesystem.stat(fullpath+'/'+folder)
+                subfolderobj = File(folder,path,subfolderstat,target,True)
+                folderobj.folders.append(subfolderobj)
 
             # stat the files in that folder.
             for file in files:
@@ -137,6 +141,26 @@ def scanprocess(queue,debug=None):
                 fileobj = File(file, folderobj, filestat, target, folder)
                 root[target][path].append(fileobj)
 
+                # Plugins loading area
+                # Actions
+                for module in actions:
+                    try:
+                        module.action(file)
+                    except:
+                        print "Action failed"
+                        import traceback
+                        print traceback.format_exc()
+    
+                # Extensions    
+                for module in extensions:
+                    try:
+                        if module.__match__(file):
+                            module.action(file)
+                    except:
+                        print "Extension Failed."
+                        import traceback
+                        print traceback.format_exc()
+
         # we ran out of folder objects
         except StopIteration:
             print "finished target " + target.tostring()
@@ -144,26 +168,6 @@ def scanprocess(queue,debug=None):
             print "we encountered an error scanning " + target.tostring()
             import traceback
             print traceback.format_exc()
-
-        # Plugins loading area
-        # Actions
-        for module in actions:
-            try:
-                module.action(file)
-            except:
-                print "Action failed"
-                import traceback
-                print traceback.format_exc()
-
-        # Extensions    
-        for module in extensions:
-            try:
-                if module.__match__(file):
-                    module.action(file)
-            except:
-                print "Extension Failed."
-                import traceback
-                print traceback.format_exc()
 
     print "Gave up looking for work - dying"
     exit(0)
