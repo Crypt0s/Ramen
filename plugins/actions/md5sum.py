@@ -13,6 +13,14 @@ import pdb
 # The scanner process doesn't do anything with the action returned values, it's up to you to store it in the DB or perform some action
 def action(fileobj,filesystem):
   try:
+    if fileobj.folder == True:
+        print 'Folder'
+        return None
+
+    # Regular files only, thx.  (this may also get socket files...)
+    if (fileobj.stat.st_mode < 10000):
+        return None
+
     if re.search('^(/dev|/proc|/sys)',fileobj.relpath) is not None:# or fileobj.target.filesystem.is_dir(fileobj.relpath) is True:
         print 'none'
         return None
@@ -25,14 +33,16 @@ def action(fileobj,filesystem):
         md5hash.update(buf)
         buf = file_desc.read(blocksize)
     hash = md5hash.digest()
-    print hash.encode('hex')
+    #print hash.encode('hex')
 
     fileobj.hash = hash
     return hash.encode('hex')
   except:
+    # This happens when it's a folder, usually.
     import traceback
     print traceback.format_exc()
-    pdb.set_trace()
+    print fileobj.relpath+'/'+fileobj.filename
+    #pdb.set_trace()
 
 # This is for testing purposes
 if __name__ == "__main__":

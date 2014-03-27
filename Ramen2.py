@@ -18,6 +18,7 @@ import ZODB, ZODB.FileStorage
 import utils
 import targeting        
 import portscan
+import transaction
 
 def folder_thread(target_queue):
     queue = multiprocessing.Queue()
@@ -113,16 +114,21 @@ def scanprocess(queue,debug=None):
     walker = target.filesystem.walk('/') 
     
     #determine if this target/fs combo exists already
-    if root.haskey(target.host):
-        if root[target.host].filesystems.haskey(target.filesystem):
-            store = root[target.host].filesystems[target.filesystem]
+    if db.has_key(target.host):
+        if db[target.host].filesystems.has_key(target.filesystem):
+            # we already have the object scanned -- get the writeable root and start writing on top of it.
+            store = db[target.host].filesystems[target.filesystem].w_root
         else:
-            root[target.host].filesystems[target.filesystem] = target.filesystem
-            store = root[target.host].filesystems[target.filesystem]
+            # we have the target, but not the fs
+            db[target.host].filesystems[target.filesystem] = target.filesystem
+            store = db[target.host].filesystems[target.filesystem].w_root
     else:
-        root[target.host] = target
-        
+        target.filesystems = {target.filesystem.product:target.filesystem}
+        db[target.host] = target
+        store = target.filesystems[target.filesystem.product].w_root
 
+
+    # SO, store now refrences the target and filesystem combo that we have in the db
 
     while 1:
         try:
@@ -138,35 +144,42 @@ def scanprocess(queue,debug=None):
     
             # stat the folder and save it
             folderstat = target.filesystem.stat(fullpath)
-            folderobj = File(relpath[-1],path,folderstat,target,True)
+            folderobj = File(relpath[-1],fullpath,folderstat,target,True)
+            store[fullpath] = folderobj
                         
             
             # TODO: We need a way to assign the folders attribute to a folder.
             folderobj.folders = []
             for folder in folders:
                 subfolderstat = target.filesystem.stat(fullpath+'/'+folder)
-                subfolderobj = File(folder,path,subfolderstat,target,True)
-                subfolderobj = runmodules(subfolderobj,filesystem)
-                path[fullpath] = subfolderobj
+                subfolderobj = File(folder,fullpath,subfolderstat,target,True)
+                subfolderobj = runmodules(subfolderobj,target.filesystem)
+                store[fullpath+'/'+folder] = subfolderobj
                 
     
             # stat the files in that folder.
             for file in files:
-                filestat = target.filesystem.stat(fullpath+file)
+                filestat = target.filesystem.stat(fullpath+'/'+file)
                 # this file is in the folder we just found the position of with folderobj, so we can set its relpath to the folder object.
-                fileobj = File(file, folderobj, filestat, target, folder)
-                fileobj = runmodules(fileobj)
-                path[fullpath+file] = fileobj
+                fileobj = File(file, fullpath, filestat, target, folder)
+                fileobj = runmodules(fileobj,target.filesystem)
+                store[fullpath+file] = fileobj
                 
 
         # we ran out of folder objects
         except StopIteration:
             print "finished target " + target.tostring()
+            break
+
+        # A file or folder had an issue, keep going
         except:
             print "we encountered an error scanning " + target.tostring()
             import traceback
             print traceback.format_exc()
-    
+
+    # Commit
+    transaction.commit()
+
     print "Gave up looking for work - dying"
     exit(0)
     
@@ -188,9 +201,16 @@ if __name__ == '__main__':
     print "Loading ZODB storage and connection"
     # Warning: Globals loaded here
     storage = ZODB.FileStorage.FileStorage('mydata.fs')
-    db = ZODB.DB(storage)
-    connection = db.open()
-    root = connection.root()
+    db_c = ZODB.DB(storage)
+    connection = db_c.open()
+    db = connection.root()
+
+    pdb.set_trace()
+
+    #TODO: Make the collections a user-settable thing in case they need multiple "sites"
+    # We want to emulate NEXPOSE's collections -- sites -> targets -> vulnerabilities
+    db['collection-1'] = {}
+    db = db['collection-1']
 
     print "Importing actions"
     actions = utils.loadmodules('plugins/actions')

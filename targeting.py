@@ -78,6 +78,9 @@ class targeter:
         # return the filesystem module and info
         return filesystem
     # This validates just the current target object -- we need a fast method to quickly validate hundreds of thousands of targets.
+
+
+# The filesystem attribute is used outside of the database -- we create target,filesystem pairs to feed to the scanner but we store the targets in the database with multiple filesystems, hence "filesystems" attr.
     
 class target(persistent.Persistent):
     # host - the url, ip, or host name of the target
