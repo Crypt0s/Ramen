@@ -209,8 +209,8 @@ if __name__ == '__main__':
 
     #TODO: Make the collections a user-settable thing in case they need multiple "sites"
     # We want to emulate NEXPOSE's collections -- sites -> targets -> vulnerabilities
-    db['collection-1'] = {}
-    db = db['collection-1']
+#    db['collection-1'] = {}
+#    db = db['collection-1']
 
     print "Importing actions"
     actions = utils.loadmodules('plugins/actions')
