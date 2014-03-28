@@ -59,6 +59,28 @@ def folder_thread(target_queue):
         print "Thought i didn't have anything to do but i was wrong, re-starting"
         folder_thread([queue.get() for i in range(queue.qsize())])
 
+def runmodules(fileobj,filesystem):
+    # Don't Repeat Yourself - holds the code for running a file object through the user-provided plugins.
+    # Actions
+    for module in actions:
+        try:
+            fileobj = module.action(fileobj,filesystem)
+        except:
+            print "Action failed"
+            import traceback
+            print traceback.format_exc()
+
+    # Extensions    
+    for module in extensions:
+        try:
+            if module.__match__(fileobj):
+                fileobj = module.action(fileobj,filesystem)
+        except:
+            print "Extension Failed."
+            import traceback
+            print traceback.format_exc()
+    return fileobj
+
 def scanprocess(queue,debug=None):
 
     if debug is None:
@@ -82,84 +104,60 @@ def scanprocess(queue,debug=None):
         # TODO: put the target info into the DB here
         print target.tostring()
 
-        # build the state tree
-        # walker.next() returns ('folderpath',[files,in,that,folder])
-
         # We should always start with the root - /
-
         # Note: So one of the weird things that this framework is going to require the plugin-writers to handle is stuff like drive letters in windows.
         # Ideally, you'd take this slash in your filesystem handler, know that it's seeking the "My Computer" and return a list of the connected drives
         # Then, youd let it go to each drive recording the drive letter as another folder in the chain.  That's how i'd do it, anyways.
 
-        walker = target.filesystem.walk('/') 
-        
-        #save the root
-        
+
+    walker = target.filesystem.walk('/') 
+    
+    #determine if this target/fs combo exists already
+    if root.haskey(target.host):
+        if root[target.host].filesystems.haskey(target.filesystem):
+            store = root[target.host].filesystems[target.filesystem]
+        else:
+            root[target.host].filesystems[target.filesystem] = target.filesystem
+            store = root[target.host].filesystems[target.filesystem]
+    else:
+        root[target.host] = target
         
 
+
+    while 1:
         try:
             # grab the next batch of files from the next folder
             fullpath,folders,files = walker.next()
-
-
+    
+    
             # parse and get the rel obj
             relpath = fullpath.split('/')
             # make sure that if the path was root (/) that we set it because the split strips single-slashes at the beginning.
             if relpath[0] == "":
                 relpath[0] = '/'
-
-            pdb.set_trace()
-            # load the target in "write to root fs tree" mode with w_root.  I provide another way to access if you only want to read.
-            path = target.filesystem.w_root
-
-            # spider down the path options until the end and you will have reached the target folder
-            # cut the last element off because that's the current file.
-
-            # requires .walk() to go in a linear fashion.  Maybe we can use placeholder objects that have blank objects to represent path placeholders?
-            for p_folder in relpath[:-1]:
-                i = 0
-                for subfolder in path.folders:
-                    i+=1
-                    if subfolder.filename == p_folder:
-                        path = path.folders[i]
-
+    
             # stat the folder and save it
             folderstat = target.filesystem.stat(fullpath)
             folderobj = File(relpath[-1],path,folderstat,target,True)
-
+                        
+            
             # TODO: We need a way to assign the folders attribute to a folder.
             folderobj.folders = []
             for folder in folders:
                 subfolderstat = target.filesystem.stat(fullpath+'/'+folder)
                 subfolderobj = File(folder,path,subfolderstat,target,True)
-                folderobj.folders.append(subfolderobj)
-
+                subfolderobj = runmodules(subfolderobj,filesystem)
+                path[fullpath] = subfolderobj
+                
+    
             # stat the files in that folder.
             for file in files:
                 filestat = target.filesystem.stat(fullpath+file)
                 # this file is in the folder we just found the position of with folderobj, so we can set its relpath to the folder object.
                 fileobj = File(file, folderobj, filestat, target, folder)
-                root[target][path].append(fileobj)
-
-                # Plugins loading area
-                # Actions
-                for module in actions:
-                    try:
-                        module.action(file)
-                    except:
-                        print "Action failed"
-                        import traceback
-                        print traceback.format_exc()
-    
-                # Extensions    
-                for module in extensions:
-                    try:
-                        if module.__match__(file):
-                            module.action(file)
-                    except:
-                        print "Extension Failed."
-                        import traceback
-                        print traceback.format_exc()
+                fileobj = runmodules(fileobj)
+                path[fullpath+file] = fileobj
+                
 
         # we ran out of folder objects
         except StopIteration:
@@ -168,7 +166,7 @@ def scanprocess(queue,debug=None):
             print "we encountered an error scanning " + target.tostring()
             import traceback
             print traceback.format_exc()
-
+    
     print "Gave up looking for work - dying"
     exit(0)
     

@@ -88,6 +88,7 @@ class target(persistent.Persistent):
         self.ports = [] # TODO: use ports
         # The filesystem settings and such are set in the settings file -- it's easier that way for now until we have a structured settings python import thing
         self.filesystem = filesystem.filesystem(host)
+        self.filesystems = {}
 
     def validate(self):
         # send itself to the filesystem handler validation subroutine for validation
