@@ -19,6 +19,7 @@ import utils
 import targeting        
 import portscan
 import transaction
+import copy
 
 def folder_thread(target_queue):
     queue = multiprocessing.Queue()
@@ -114,22 +115,24 @@ def scanprocess(queue,debug=None):
     walker = target.filesystem.walk('/') 
     
     #determine if this target/fs combo exists already
+
     if db.has_key(target.host):
-        if db[target.host].filesystems.has_key(target.filesystem):
+        if db[target.host].filesystems.has_key(target.filesystem.product):
             # we already have the object scanned -- get the writeable root and start writing on top of it.
-            store = db[target.host].filesystems[target.filesystem].w_root
+            #store = db[target.host].filesystems[target.filesystem.product].w_root
+            pass
         else:
             # we have the target, but not the fs
-            db[target.host].filesystems[target.filesystem] = target.filesystem
-            store = db[target.host].filesystems[target.filesystem].w_root
+            db[target.host].filesystems[target.filesystem.product] = target.filesystem
+            #store = db[target.host].filesystems[target.filesystem.product].w_root
     else:
         target.filesystems = {target.filesystem.product:target.filesystem}
         db[target.host] = target
-        store = target.filesystems[target.filesystem.product].w_root
+        #store = db[target.host].filesystems[target.filesystem.product].w_root
+    store = db[target.host].filesystems[target.filesystem.product].w_root
 
 
     # SO, store now refrences the target and filesystem combo that we have in the db
-
     while 1:
         try:
             # grab the next batch of files from the next folder
