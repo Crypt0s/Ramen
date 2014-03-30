@@ -5,33 +5,44 @@ The network protocol handlers allow network protocols and network filesystems to
 
 An example usage of this project would be scanning a netblock for WebDAV, collecting timestamps, author name, file permissions, and path data while opening and running a MD5sum operation over every file with the extension .pst created between the dates of January and March.
 
-Results are stored in an object database for running queries and reports.
+Results are stored in an object database for running queries and reports in ways that don't require a lot of code and that will be intuitive to even novice programmers.
+
 
 Features
 ========
-* Plugins for each Filesystem
+* Modules for each Filesystem
+* Support for user plugins to do things like search for keywords, get file hashes, run SSDEEP, ect...
 * Well-defined interface for writing your own protocol/filesystem handlers
 * Automated discovery and enumeration of targets
-* Support for user plugins to do things like search for keywords, get file hashes, run SSDEEP, ect...
 
 Plugins
 =======
 * MD5hash
 
-Filesystem Support
+Filesystems Supported
 ==================
 * Local Disk
+* FTP
+* HTTP
+
+Filesystems In-Progress
+=======================
 * Sharepoint WebDav
 * WebDav
 
-In-Progress
-===========
-* Web application user interface
-
-Install Procedures
+Install Requirements
 ==================
-* To be filled when project stabilizes
+* Python 2.7
+* ZODB & its prerequisites
+* Beautifulsoup (for the HTTP handler)
 
 Known Issues
 ============
-* To be filled when project stabilizes
+* The user interface is junky
+
+To-Do:
+======
+1. Stabilize the configuration of the Object Database
+2. Plan and build User Interface to automate + configure Ramen
+3. Incorporate Additional Filesystems and Plugins (ssdeep, webDAV, sharepoint, ect...)
+4. Integrate with Maltego
