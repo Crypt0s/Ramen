@@ -1,0 +1,3 @@
+#!/usr/
+
+This directory holds the ZODB database.
