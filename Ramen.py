@@ -8,20 +8,26 @@
 #
 ###########################
 
-from file import File
+# For queue (most of these are now legacy from the first implementation)
 import multiprocessing, threading, os, settings, logging, random
-import targeting
 from multiprocessing import Pool, Queue
 from multiprocessing.pool import ThreadPool
-import pdb
+
+# For DB
 import ZODB, ZODB.FileStorage
-import utils
-import targeting        
-import portscan
 import transaction
 import copy
 
-def folder_thread(target_queue):
+# imports all custom modules in the libramen folder.
+from libramen import *
+from file import File
+
+# for debug
+import pdb
+
+
+def thread_manager(target_queue):
+    # Handles the queue process in a way that is more resiliant to errors than mapped pools, which can fail on python segfaults.
     queue = multiprocessing.Queue()
     [queue.put(target) for target in target_queue]
     processes = []
@@ -59,7 +65,7 @@ def folder_thread(target_queue):
         return
     else:
         print "Thought i didn't have anything to do but i was wrong, re-starting"
-        folder_thread([queue.get() for i in range(queue.qsize())])
+        thread_manager([queue.get() for i in range(queue.qsize())])
 
 def runmodules(fileobj,filesystem):
     # Don't Repeat Yourself - holds the code for running a file object through the user-provided plugins.
@@ -102,43 +108,33 @@ def scanprocess(queue,debug=None):
     else:
         target = debug
 
-        # Scan the target
-        # TODO: put the target info into the DB here
-        print target.tostring()
+    print target.tostring()
 
-        # We should always start with the root - /
-        # Note: So one of the weird things that this framework is going to require the plugin-writers to handle is stuff like drive letters in windows.
-        # Ideally, you'd take this slash in your filesystem handler, know that it's seeking the "My Computer" and return a list of the connected drives
-        # Then, youd let it go to each drive recording the drive letter as another folder in the chain.  That's how i'd do it, anyways.
-
-
+    # We should always start with the root - /
+    # Note: So one of the weird things that this framework is going to require the plugin-writers to handle is stuff like drive letters in windows.
+    # Ideally, you'd take this slash in your filesystem handler, know that it's seeking the "My Computer" and return a list of the connected drives
+    # Then, youd let it go to each drive recording the drive letter as another folder in the chain.  That's how i'd do it, anyways.
     walker = target.filesystem.walk('/') 
     
     #determine if this target/fs combo exists already
-
     if db.has_key(target.host):
         if db[target.host].filesystems.has_key(target.filesystem.product):
             # we already have the object scanned -- get the writeable root and start writing on top of it.
-            #store = db[target.host].filesystems[target.filesystem.product].w_root
             pass
         else:
             # we have the target, but not the fs
             db[target.host].filesystems[target.filesystem.product] = target.filesystem
-            #store = db[target.host].filesystems[target.filesystem.product].w_root
     else:
         target.filesystems = {target.filesystem.product:target.filesystem}
         db[target.host] = target
-        #store = db[target.host].filesystems[target.filesystem.product].w_root
     store = db[target.host].filesystems[target.filesystem.product].w_root
-
 
     # SO, store now refrences the target and filesystem combo that we have in the db
     while 1:
         try:
             # grab the next batch of files from the next folder
             fullpath,folders,files = walker.next()
-    
-    
+        
             # parse and get the rel obj
             relpath = fullpath.split('/')
             # make sure that if the path was root (/) that we set it because the split strips single-slashes at the beginning.
@@ -212,8 +208,8 @@ if __name__ == '__main__':
 
     #TODO: Make the collections a user-settable thing in case they need multiple "sites"
     # We want to emulate NEXPOSE's collections -- sites -> targets -> vulnerabilities
-#    db['collection-1'] = {}
-#    db = db['collection-1']
+    #db['collection-1'] = {}
+    #db = db['collection-1']
 
     print "Importing actions"
     actions = utils.loadmodules('plugins/actions')
@@ -229,14 +225,9 @@ if __name__ == '__main__':
     # Parses the targeting file into target objects
     targets = targeting.targeter().parse()
 
-    #print "Portscanning Targets"
-    ## TODO: this is going to be slow as balls.  Make this fast as hell.
-    ## results are saved in the target
-    ## Also: throw the targets out if they don't have at least one open port to validate scannable services on.
-    #targets = [i for i in targets if portscan.scan(i) is not False]
-
     print "Scanning / Validating Targets"
-    # Validation routine built into the clients, uses the open ports detected by the portscanner
+    # Validation routine built into the Filesystem handlers -- verifies that the target is actually running the indicated filesystem
+    # TODO: Portscan and find services we know we can handle.
     targets = [i for i in targets if i.validate() is not False]
 
     if len(targets)<1:
@@ -249,4 +240,4 @@ if __name__ == '__main__':
 
     # where the magic happens
     print "Scanning targets"
-    folder_thread(targets)
+    thread_manager(targets)
