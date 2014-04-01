@@ -14,7 +14,6 @@ import pdb
 def action(fileobj,filesystem):
   try:
     if fileobj.folder == True:
-        print 'Folder'
         return None
 
     # Regular files only, thx.  (this may also get socket files...)
