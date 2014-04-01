@@ -5,6 +5,7 @@ import imp
 from BTrees import OOBTree
 import persistent
 from BeautifulSoup import *
+import time
 import pdb
 
 # required
@@ -27,7 +28,7 @@ class filesystem(persistent.Persistent):
         self.to_scan = [url]
         for url in self.to_scan:
             s_url = urlparse.urlsplit(url)
-            yield self.__request(s_url.netloc,s_url.path)
+            yield self.__request(s_url.netloc,s_url.path+'?'+s_url.query)
 
     def __request(self, host,path):
         # Meat method
@@ -123,20 +124,75 @@ class filesystem(persistent.Persistent):
         pass
 
     def stat(url):
-        page = self.open(url)
-        contents = page.read()
-        size = len(contents)
+        #since we look at headers too, we start with a fresh request.
+        s_url = urlparse.urlsplit(url)
+        try:
+            conn = httplib.HTTPConnection(s_url.netloc)
+            request_time = time.time()
+            conn.request("GET",s_url.path+'?'+s_url.query)
+            response = conn.getresponse()
+        except:
+            return None
+
+        st_size = response.length
+        st_time = 0
+
+        # Check for last-modified header
+        headers = response.getheaders()
+        for tuple in headers:
+            if 'content-type' in tuple[0]:
+                content_type = response.getheader('content-type')
+
+            elif 'age' in tuple[0]:
+                # we assume that it's in seconds.  Get the epoch time, subtract age header value, and save
+                age = int(response.getheader('age'))
+                # round it, because we assume that age is time in whole seconds.
+                st_mtime = int(time.time()) - age
+
+            elif 'date' in tuple[0]:
+                longdate = response.getheader('date')
+                server_time = time.mktime(time.strptime(longtime,'%a, %d %b %Y %H:%M:%S %Z'))                
+                time_diff = server_time - request_time
+                if time_diff > 60 or time_diff < 60:
+                    print "The server's time is significantly different than ours. " + str(time_diff)
+
+            # we prioritize last-modified time over age because it gives info down to the second.
+            elif 'last-modified' in tuple[0]:                
+                longdate = response.getheader('last-modified')
+                st_mtime = time.mktime(time.strptime(longtime,'%a, %d %b %Y %H:%M:%S %Z'))
+                break # get out of the loop ASAP -- this should be in the last element checked
+
+# I generally Dont think that the code below is going to end up being a "good idea" without more than just regex. Think more on this.
+#
+#        # check inside page for a date:
+#        if 'text' in content_type:
+#            # The fp for socket will hang open and we can't close it and then read the buffer, and we can't trust that we won't hit a multi-gig file.
+#            # Therefore, read one line at a time until we the end of the length, as determined by the HTTP response header.
+#            fp = response.fp
+#            bytes_read = 0
+#
+#            # if this part is erroring, then the last line contains some text but no \r\n
+#            while bytes_read != st_size:
+#                line = fp.readline()
+#                bytes_read += len(line)
+#                for regex_tuple in settings.regex_list:
+#                    regex = regex_tuple[0]
+#                    datefmt = regex_tuple[1]
+#                    if regex.find(line):
+#                        st_mtime = time.mktime(time.strptime(regex.group(0),datefmt)        
+        if st_time == 0:
+            st_time = request_time
+#        else:
+#            st_time = st_time - time_diff
 
         # kinda just assume...
         user, group = "www" #TODO: or whatever the username is in the basic auth section!!!
 
-        chmod = #whatever the readonly everyone is
+        # read, read, read perms
+        chmod = 444
 
-        # search for a datestamp with common regexes -- use the settings file to allow user to set these regexes
-        # TODO: do that.
-
-        #return the analog
-        return (chmod,size)        
+        #return the stat() analog
+        return (chmod,None,None,None,user,group,st_size,request_time,st_mtime,None)
 
 
     def validate(self,target):
@@ -159,7 +215,7 @@ class filesystem(persistent.Persistent):
     def open(url):
         s_url = urlparse.urlsplit(url)
         conn = httplib.HTTPConnection(s_url.netloc)
-        conn.request("GET", s_url.path)
+        conn.request("GET", s_url.path+'?'+s_url.query)
         response = conn.getresponse()
         # this returns something close enough to a FP object to use in Ramen.
         return response.fp
