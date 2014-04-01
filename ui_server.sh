@@ -1,2 +1,2 @@
 #!/bin/bash
-zodbbrowser Ramen/mydata.fs
+zodbbrowser data/mydata.fs
