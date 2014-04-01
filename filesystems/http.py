@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import httplib, urlparse, socket
+import httplib, urlparse, urllib, socket
 import imp
 from BTrees import OOBTree
 import persistent
@@ -14,31 +14,41 @@ product = 'http'
 
 class filesystem(persistent.Persistent):
 
-    def __init__(self):
+    def __init__(self,host):
         self.scanned = []
         self.to_scan = []
         self.product = "http"
-
         # required
         self.root = OOBTree.OOBTree()
 
+        # Did we get a valid URL or not?
+        if not host.startswith('http://'):
+            host = 'http://' + host
 
-    def walk(self,url):
+        self.s_url = urlparse.urlsplit(host)
+        if self.s_url.netloc == '':
+            print "Bad hostname"
+    
+        self.host = self.s_url.netloc
+        
+    def walk(self,path):
         # need to initialize here
-        self.to_scan = [url]
-        for url in self.to_scan:
-            s_url = urlparse.urlsplit(url)
-            yield self.__request(s_url.netloc,s_url.path+'?'+s_url.query)
+        self.to_scan = [path]
+        while len(self.to_scan) > 0:
+            print "going back for another round"
+            for path in self.to_scan:
+                self.to_scan.remove(path)
+                #s_url = urlparse.urlsplit(url)
+                yield self.__request(path)
 
-    def __request(self, host,path):
+    def __request(self,path):
+
         # Meat method
-        if path in self.scanned:
-            return
+        #if path in self.scanned:
+        #    return 
+
         self.scanned.append(path)
-        self.host = host
-        self.path = path
-        print (len(self.scanned)),
-        ip = socket.gethostbyname_ex(self.host)
+
         conn = httplib.HTTPConnection(self.host)
         conn.request("GET", path)
         self.r1 = conn.getresponse()
@@ -49,15 +59,17 @@ class filesystem(persistent.Persistent):
             200:self.__parse,
             401:self.__auth,
             403:self.__auth,
-            404:self.__error,
+            404:self.__apperror,
             400:self.__apperror
         }
+        print str(self.r1.status) + ' ' + path
         return response_handlers[self.r1.status](self.r1) #this seems uglier than sin.
             
     def __parse(self,result = None):
         type = result.getheader('content-type')
         if 'text' not in type:
-            return
+            # return the result object.
+            return (result, [])
         # Check to see if this was called from redirect
         soup = BeautifulSoup(result.read())
         urls = []
@@ -70,58 +82,75 @@ class filesystem(persistent.Persistent):
         # OK, now see if the URL's match the target.
         # TODO: do we want to check if the url is on the same IP or not?
         for url in urls:
+            path = ''
             if 'mailto:' in url[0:7]:
                 urls.remove(url)
                 continue
-            p_url = urlparse.urlsplit(url)
+            s_url = urlparse.urlsplit(url)
             # Relative path, add additional info and reparse
-            if p_url.netloc == '':
-                target_url = urlparse.urljoin('http://'+self.host+self.path,p_url.path)
-                self.to_scan.append(target_url)
+            # TODO: this could be written better
+            if s_url.netloc == '':
+                url = 'http://'+self.host+url
+                s_url = urlparse.urlsplit(url)
+                # TODO: all the url's are going to have ?'s in them!
+                path = s_url.path
+                path = urllib.url2pathname(path)
+                path = urllib.pathname2url(path)
+
+                path = path+'?'+s_url.query
             # keep it http and keep it on-target
-            if self.host == p_url.netloc and 'http' == p_url.scheme:
-                self.to_scan.append(url)
-        print dir(self.r1)
-        return (self.r1,urls)
+            if self.host == s_url.netloc and 'http' == s_url.scheme and s_url.path:
+                path = s_url.path
+                path = urllib.url2pathname(path)
+                path = urllib.pathname2url(path)
+
+                path = path + '?' + s_url.query
+
+            if path != '' and path != '?' and path not in self.scanned and path not in self.to_scan:
+                self.to_scan.append(path)
+        print len(self.to_scan)
+        return (result,urls)
 
     # follow redirects as long as they are within target scope
     def __redirect(self,*args):
         location = self.r1.getheader('location')
-        url = urlparse.urlsplit(location)
-        path = url.path
+        s_url = urlparse.urlsplit(location)
+        path = s_url.path
+        if self.host in s_url.netloc:
+            return self.__request(path)
+
+
     def validate(self,target):
         # was a specific port specced for the target?  If not, asusme 80.
         # this is a user convenience snippet.
         try:
-            getattr(target,'port')
+            getattr(self,'port')
         except:
-            target.port = 80
+            self.port = 80
 
         #nutz und boltz
-        conn = httplib.HTTPConnection(target.host,target.port)
+        s_url = urlparse.urlsplit(self.host)
+        conn = httplib.HTTPConnection(s_url.netloc,self.port)
         try:
             conn.request("GET","/")
             response = conn.getresponse()
         except:
+            import traceback
+            print traceback.format_exc()
             return False
         return True
-        redir_host = url.netloc
-    
-        # don't go off-target, and don't move off http - we only were asked for http!
-        if self.host == redir_host and url.scheme == 'http':
-            self.__request(self.host,path)
-        else:
-            # error out, it tried to redirect me away from target.
-            pass
         
     def __error(self,result):
-        pass
+        print result.status()
+        return False
     
     def __apperror(self,result):
-        print "The spider made a request the server couldn't handle -- this is probably a bug in the spider."
+        #print "The spider made a request the server couldn't handle -- this is probably a bug in the spider."
+        print result.status
+        return False
     
     def __auth(self):
-        pass
+        return False
 
     def stat(url):
         #since we look at headers too, we start with a fresh request.
@@ -195,23 +224,6 @@ class filesystem(persistent.Persistent):
         return (chmod,None,None,None,user,group,st_size,request_time,st_mtime,None)
 
 
-    def validate(self,target):
-        # was a specific port specced for the target?  If not, asusme 80.
-        # this is a user convenience snippet.
-        try:
-            getattr(target,'port')
-        except:
-            target.port = 80
-
-        #nutz und boltz
-        conn = httplib.HTTPConnection(target.host,target.port)
-        try:
-            conn.request("GET","/")
-            response = conn.getresponse()
-        except:
-            return False
-        return True
-
     def open(url):
         s_url = urlparse.urlsplit(url)
         conn = httplib.HTTPConnection(s_url.netloc)
@@ -228,8 +240,12 @@ class filesystem(persistent.Persistent):
         # Python returns refs (with the exception of several notable cases) so this should be fine.
         return self.root
 
+# little unit test-ish thing
 if __name__ == "__main__":
-    http = http_handler()
-    gen = http.walk('http://asrcfederal.com/')
-    gen.next()
-    pdb.set_trace()
+    fs = filesystem('http://www.asrcfederal.com')
+    gen = fs.walk('/')
+    while 1:
+        try:
+            gen.next()
+        except:
+            pdb.set_trace()

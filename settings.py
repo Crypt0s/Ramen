@@ -8,3 +8,4 @@
 
 
 # Not in use.
+TARGET_LIST='targets.txt'

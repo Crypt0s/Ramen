@@ -18,12 +18,15 @@ import ZODB, ZODB.FileStorage
 import transaction
 import copy
 
-# imports all custom modules in the libramen folder.
-from libramen import *
-from file import File
-
 # for debug
 import pdb
+
+# imports all custom modules in the libramen folder.
+from libramen import *
+
+#from file import File
+File = file.File
+
 
 
 def thread_manager(target_queue):
@@ -204,7 +207,6 @@ if __name__ == '__main__':
     connection = db_c.open()
     db = connection.root()
 
-    pdb.set_trace()
 
     #TODO: Make the collections a user-settable thing in case they need multiple "sites"
     # We want to emulate NEXPOSE's collections -- sites -> targets -> vulnerabilities
