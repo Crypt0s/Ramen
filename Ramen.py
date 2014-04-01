@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     print "Loading ZODB storage and connection"
     # Warning: Globals loaded here
-    storage = ZODB.FileStorage.FileStorage('mydata.fs')
+    storage = ZODB.FileStorage.FileStorage('data/mydata.fs')
     db_c = ZODB.DB(storage)
     connection = db_c.open()
     db = connection.root()
