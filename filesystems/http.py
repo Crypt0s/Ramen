@@ -109,7 +109,7 @@ class filesystem(persistent.Persistent):
             if path != '' and path != '?' and path not in self.scanned and path not in self.to_scan:
                 self.to_scan.append(path)
         print len(self.to_scan)
-        return (result.url,urls,[])
+        return (result.url,[],urls)
 
     # follow redirects as long as they are within target scope
     def __redirect(self,r1):
@@ -117,6 +117,7 @@ class filesystem(persistent.Persistent):
         s_url = urlparse.urlsplit(location)
         path = s_url.path
         if self.host in s_url.netloc:
+            self.host = s_url.netloc
             return self.__request(path)
 
 
