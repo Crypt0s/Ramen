@@ -51,7 +51,7 @@ class filesystem(persistent.Persistent):
 
         conn = httplib.HTTPConnection(self.host)
         conn.request("GET", path)
-        self.r1 = conn.getresponse()
+        r1 = conn.getresponse()
         response_handlers = {
             301:self.__redirect,
             302:self.__redirect,
@@ -62,14 +62,15 @@ class filesystem(persistent.Persistent):
             404:self.__apperror,
             400:self.__apperror
         }
-        print str(self.r1.status) + ' ' + path
-        return response_handlers[self.r1.status](self.r1) #this seems uglier than sin.
+        print str(r1.status) + ' ' + path
+        r1.url = path
+        return response_handlers[r1.status](r1) #this seems uglier than sin.
             
     def __parse(self,result = None):
         type = result.getheader('content-type')
         if 'text' not in type:
             # return the result object.
-            return (result, [])
+            return (result.url, [], [])
         # Check to see if this was called from redirect
         soup = BeautifulSoup(result.read())
         urls = []
@@ -96,7 +97,6 @@ class filesystem(persistent.Persistent):
                 path = s_url.path
                 path = urllib.url2pathname(path)
                 path = urllib.pathname2url(path)
-
                 path = path+'?'+s_url.query
             # keep it http and keep it on-target
             if self.host == s_url.netloc and 'http' == s_url.scheme and s_url.path:
@@ -109,11 +109,11 @@ class filesystem(persistent.Persistent):
             if path != '' and path != '?' and path not in self.scanned and path not in self.to_scan:
                 self.to_scan.append(path)
         print len(self.to_scan)
-        return (result,urls)
+        return (result.url,urls,[])
 
     # follow redirects as long as they are within target scope
-    def __redirect(self,*args):
-        location = self.r1.getheader('location')
+    def __redirect(self,r1):
+        location = r1.getheader('location')
         s_url = urlparse.urlsplit(location)
         path = s_url.path
         if self.host in s_url.netloc:
@@ -130,7 +130,7 @@ class filesystem(persistent.Persistent):
 
         #nutz und boltz
         s_url = urlparse.urlsplit(self.host)
-        conn = httplib.HTTPConnection(s_url.netloc,self.port)
+        conn = httplib.HTTPConnection(self.host,self.port)
         try:
             conn.request("GET","/")
             response = conn.getresponse()
@@ -152,7 +152,7 @@ class filesystem(persistent.Persistent):
     def __auth(self):
         return False
 
-    def stat(url):
+    def stat(self,url):
         #since we look at headers too, we start with a fresh request.
         s_url = urlparse.urlsplit(url)
         try:
