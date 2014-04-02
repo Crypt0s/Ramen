@@ -16,9 +16,10 @@ def action(fileobj,filesystem):
     if fileobj.folder == True:
         return None
 
+    # This is too...unlikely to be correct.
     # Regular files only, thx.  (this may also get socket files...)
-    if (fileobj.stat.st_mode < 10000):
-        return None
+    #if (fileobj.stat.st_mode < 10000):
+    #    return None
 
     if re.search('^(/dev|/proc|/sys)',fileobj.relpath) is not None:# or fileobj.target.filesystem.is_dir(fileobj.relpath) is True:
         print 'none'
@@ -38,10 +39,11 @@ def action(fileobj,filesystem):
     return hash.encode('hex')
   except:
     # This happens when it's a folder, usually.
-    import traceback
-    print traceback.format_exc()
-    print fileobj.relpath+'/'+fileobj.filename
+    #import traceback
+    #print traceback.format_exc()
+    #print fileobj.relpath+'/'+fileobj.filename
     #pdb.set_trace()
+    return None
 
 # This is for testing purposes
 if __name__ == "__main__":

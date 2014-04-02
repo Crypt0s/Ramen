@@ -68,7 +68,8 @@ class filesystem(persistent.Persistent):
             
     def __parse(self,result = None):
         type = result.getheader('content-type')
-        if 'text' not in type:
+
+        if type == None or 'text' not in type:
             # return the result object.
             return (result.url, [], [])
         # Check to see if this was called from redirect
@@ -95,16 +96,16 @@ class filesystem(persistent.Persistent):
                 s_url = urlparse.urlsplit(url)
                 # TODO: all the url's are going to have ?'s in them!
                 path = s_url.path
-                path = urllib.url2pathname(path)
-                path = urllib.pathname2url(path)
-                path = path+'?'+s_url.query
             # keep it http and keep it on-target
             if self.host == s_url.netloc and 'http' == s_url.scheme and s_url.path:
                 path = s_url.path
+            try:
                 path = urllib.url2pathname(path)
                 path = urllib.pathname2url(path)
-
                 path = path + '?' + s_url.query
+            except:
+                # Must use that ISO format....for at least fark -- still testing
+                path = urllib.quote(urllib.unquote(path).encode('iso-8859-1'))
 
             if path != '' and path != '?' and path not in self.scanned and path not in self.to_scan:
                 self.to_scan.append(path)
@@ -136,24 +137,25 @@ class filesystem(persistent.Persistent):
             conn.request("GET","/")
             response = conn.getresponse()
         except:
-            import traceback
-            print traceback.format_exc()
-            return False
+            #import traceback
+            #print traceback.format_exc()
+            return ('',[],[])
         return True
         
     def __error(self,result):
         print result.status()
-        return False
+        return ('',[],[])
     
     def __apperror(self,result):
         #print "The spider made a request the server couldn't handle -- this is probably a bug in the spider."
         print result.status
-        return False
+        return ('',[],[])
     
     def __auth(self):
-        return False
+        return ('',[],[])
 
     def stat(self,url):
+        print "stat"
         #since we look at headers too, we start with a fresh request.
         s_url = urlparse.urlsplit(url)
         try:
@@ -165,11 +167,12 @@ class filesystem(persistent.Persistent):
             return None
 
         st_size = response.length
-        st_time = 0
+        st_mtime = 0
 
         # Check for last-modified header
         headers = response.getheaders()
         for tuple in headers:
+
             if 'content-type' in tuple[0]:
                 content_type = response.getheader('content-type')
 
@@ -181,7 +184,7 @@ class filesystem(persistent.Persistent):
 
             elif 'date' in tuple[0]:
                 longdate = response.getheader('date')
-                server_time = time.mktime(time.strptime(longtime,'%a, %d %b %Y %H:%M:%S %Z'))                
+                server_time = time.mktime(time.strptime(longdate,'%a, %d %b %Y %H:%M:%S %Z'))                
                 time_diff = server_time - request_time
                 if time_diff > 60 or time_diff < 60:
                     print "The server's time is significantly different than ours. " + str(time_diff)
@@ -210,14 +213,12 @@ class filesystem(persistent.Persistent):
 #                    datefmt = regex_tuple[1]
 #                    if regex.find(line):
 #                        st_mtime = time.mktime(time.strptime(regex.group(0),datefmt)        
-        if st_time == 0:
-            st_time = request_time
 #        else:
 #            st_time = st_time - time_diff
 
         # kinda just assume...
-        user, group = "www" #TODO: or whatever the username is in the basic auth section!!!
-
+        user = "www" #TODO: or whatever the username is in the basic auth section!!!
+        group = "www"
         # read, read, read perms
         chmod = 444
 

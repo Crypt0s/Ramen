@@ -21,16 +21,22 @@ import copy
 # for debug
 import pdb
 
+#for saving
+import signal
+import pickle
+import sys
+
 # imports all custom modules in the libramen folder.
 from libramen import *
 
 #from file import File
 File = file.File
 
-
+queue = None
 
 def thread_manager(target_queue):
     # Handles the queue process in a way that is more resiliant to errors than mapped pools, which can fail on python segfaults.
+    global queue
     queue = multiprocessing.Queue()
     [queue.put(target) for target in target_queue]
     processes = []
@@ -137,33 +143,44 @@ def scanprocess(queue,debug=None):
         try:
             # grab the next batch of files from the next folder
             fullpath,folders,files = walker.next()
+            print 'walked'
         
             # parse and get the rel obj
             relpath = fullpath.split('/')
             # make sure that if the path was root (/) that we set it because the split strips single-slashes at the beginning.
             if relpath[0] == "":
                 relpath[0] = '/'
-    
+
+            print fullpath
+            #posix.stat_result(st_mode=33188, st_ino=2621703, st_dev=2050L, st_nlink=1, st_uid=0, st_gid=0, st_size=30, st_atime=1395927104, st_mtime=1175771922, st_ctime=1393946695)
+            # File signature: class File(filename, relpath, stat, target, folder=False):
             # stat the folder and save it
             folderstat = target.filesystem.stat(fullpath)
             folderobj = File(relpath[-1],fullpath,folderstat,target,True)
+            folderobj = runmodules(folderobj,target.filesystem)
             store[fullpath] = folderobj
                         
+            if fullpath[-1] != '/':
+                fullpath = fullpath+'/'
             
             # TODO: We need a way to assign the folders attribute to a folder.
-            folderobj.folders = []
-            for folder in folders:
-                subfolderstat = target.filesystem.stat(fullpath+'/'+folder)
-                subfolderobj = File(folder,fullpath,subfolderstat,target,True)
-                subfolderobj = runmodules(subfolderobj,target.filesystem)
-                store[fullpath+'/'+folder] = subfolderobj
+            #folderobj.folders = []
+ 
+            # I'm pretty sure this is obsolete code in this iteration but may be useful in the future.
+            #for folder in folders:
+            #    print folder
+            #    subfolderstat = target.filesystem.stat(fullpath+folder)
+            #    subfolderobj = File(folder,fullpath,subfolderstat,target,True)
+            #    subfolderobj = runmodules(subfolderobj,target.filesystem)
+            #    store[fullpath+'/'+folder] = subfolderobj
                 
     
             # stat the files in that folder.
             for file in files:
-                filestat = target.filesystem.stat(fullpath+'/'+file)
+                print file
+                filestat = target.filesystem.stat(fullpath+file)
                 # this file is in the folder we just found the position of with folderobj, so we can set its relpath to the folder object.
-                fileobj = File(file, fullpath, filestat, target, folder)
+                fileobj = File(file, fullpath, filestat, target)
                 fileobj = runmodules(fileobj,target.filesystem)
                 store[fullpath+file] = fileobj
                 
@@ -184,8 +201,33 @@ def scanprocess(queue,debug=None):
 
     print "Gave up looking for work - dying"
     exit(0)
+
+
+def signal_handler(signal, frame):
+        # Ugh.
+        global queue
+
+        print " -- SIGINT DETECTED, FLUSHING TO DISK -- "
+        transaction.commit()
+        queue.close()
+
+        # snapshot the queue of targets
+        queue_snapshot = []
+        while not queue.empty():
+            queue_snapshot.append(queue.get())
+
+        # save the queue to disk
+        with open('data/queue.tmp',w) as tmpqueue:
+            tmpqueue.write(pickle.dumps(tmpqueue))
+
+        # Todo: we save the targets, their FS's, and therefore their file trees - we should be able to extrapolate what position we were at when we saved to disk using this info.
+
+        print " -- Finished! -- "
+        sys.exit()
+
     
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
     target_queue = []
     actions = []
     extensions = []
