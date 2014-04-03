@@ -1,0 +1,7 @@
+As of version 1.5.5, prior to opening /etc/request-key.conf, the
+request-key utility will look first in /etc/request-key.d for a file of
+the key type name plus ".conf". These files are example config files
+that distro packagers can use to have request-key autoconfigured to
+use the cifs utilities that are installed. Typically, distro packagers
+will want to drop the resulting .conf files into /etc/request-key.d.
+

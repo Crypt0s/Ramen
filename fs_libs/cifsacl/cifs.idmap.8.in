@@ -1,0 +1,93 @@
+'\" t
+.\"     Title: cifs.idmap
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 05/26/2011
+.\"    Manual: System Administration tools
+.\"    Source: cifs-utils 4.0
+.\"  Language: English
+.\"
+.TH "CIFS\&.IDMAP" "8" "05/26/2011" "cifs-utils" "System Administration tools"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cifs.idmap \- Userspace helper for mapping ids for Common Internet File System (CIFS)
+.SH "SYNOPSIS"
+.HP \w'\ 'u
+cifs\&.idmap [\-\-version|\-v] {keyid}
+.SH "DESCRIPTION"
+.PP
+This tool is part of the cifs-utils suite\&.
+.PP
+cifs\&.idmap is a userspace helper program for the linux CIFS client filesystem\&. There are a number of activities that the kernel cannot easily do itself\&. This program is a callout program that does these things for the kernel and then returns the result\&.
+.PP
+cifs\&.idmap is generally intended to be run when the kernel calls request\-key(8)
+for a particular key type\&. While it can be run directly from the command\-line, it is not generally intended to be run that way\&.
+.PP
+cifs\&.idmap works in conjuction with winbind facility of Samba suite to map owner and group SIDs to uids and gids respectively\&.  It is best utilized when
+.br
+\t\- a mount option of cifsacl is specified when mounting a cifs share
+.br
+\t\- winbind is specified as one of the search entries for passwd and group databases in file /etc/nsswitch\&.conf
+.br
+\t\- file smb.conf has winbind specific entries
+.br
+\t\- winbind daemon program is running
+.br
+.sp
+In case winbind and cifs.idmap facilities are unavailable, file objects in a mounted share are assigned uid and gid of the credentials of the process that mounted the share\&. So it is strongly recomemended to use mount options of uid and gid to specify a default uid and gid to map owner SIDs and group SIDs respectively in case services of winbind and cifs.idmap facility are unavailable\&.
+.SH "OPTIONS"
+.PP
+\-\-version|\-v
+.RS 4
+Print version number and exit\&.
+.RE
+.SH "CONFIGURATION FOR KEYCTL"
+.PP
+cifs\&.idmap is designed to be called from the kernel via the request\-key callout program\&. This requires that request\-key be told where and how to call this program\&. Currently cifs\&.idmap handles a key type of:
+.PP
+cifs\&.idmap
+.RS 4
+This keytype is for mapping a SID to either an uid or a gid
+.RE
+.PP
+To make this program useful for CIFS, you will need to set up entry for it in request\-key\&.conf(5)\&. Here is an example of an entry for this key type:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+#OPERATION  TYPE           D C PROGRAM ARG1 ARG2\&.\&.\&.
+#=========  =============  = = ================================
+create      cifs\&.idmap     * * @sbindir@/cifs\&.idmap %k
+.fi
+.if n \{\
+.RE
+.\}
+.PP
+See
+\fBrequest-key.conf\fR(5)
+for more info on each field\&.
+.SH "NOTES"
+.PP
+Support for upcalls to cifs.idmap was initially introduced in the 3.0 kernel.
+.SH "SEE ALSO"
+.PP
+
+\fBrequest-key.conf\fR(5),
+\fBmount.cifs\fR(8)
+.SH "AUTHOR"
+.PP
+Shirish Pargaonkar wrote the cifs\&.idmap program\&.
+.PP
+The
+Linux CIFS Mailing list
+is the preferred place to ask questions regarding these programs\&.

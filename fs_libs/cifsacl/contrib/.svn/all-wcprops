@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/contrib
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/contrib/Makefile.in
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/contrib/Makefile.am
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/contrib/Makefile
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/starfish-v1/!svn/ver/546/trunk/cifs-utils/contrib/README
+END

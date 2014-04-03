@@ -1,0 +1,107 @@
+'\" t
+.\"     Title: cifs.idmap
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 08/19/2011
+.\"    Manual: System Administration tools
+.\"    Source: cifs-utils 4.0
+.\"  Language: English
+.\"
+.TH "SETCIFSACL" "1" "08/19/2011" "cifs-utils" "CIFS Access Control List Tools"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+setcifsacl \- Userspace helper to alter an ACL in a security descriptor for Common Internet File System (CIFS)
+.SH "SYNOPSIS"
+.HP \w'\ 'u
+setcifsacl [\-v|\-a|\-D|\-M|\-S] "{one or more ACEs}" {file system object}
+.SH "DESCRIPTION"
+.PP
+This tool is part of the cifs-utils suite\&.
+.PP
+setcifsacl is a userspace helper program for the Linux CIFS client file system.  It is intended to alter an ACL of a security descriptor for a file system object.  It is best utilized when an option of cifsacl is specified when mounting a cifs share in conjunction with winbind facility of Samba suite.  Whether a security descriptor to be set is applied or not is determined by the CIFS/SMB server.
+.SH "OPTIONS"
+.PP
+\-v
+.RS 4
+Print version number and exit\&.
+.RE
+\-a
+.RS 4
+Add one or more ACEs to an ACL of a security descriptor.
+An ACE is added even if the same ACE exists in the ACL.
+.RE
+\-D
+.RS 4
+Delete one or more ACEs from an ACL of a security descriptor.
+Entire ACE has to match in an existing ACL for the listed ACEs to be deleted.
+.RE
+\-M
+.RS 4
+Modify one or more ACEs from an ACL of a security descriptor.
+SID and type are used to match for existing ACEs to be modified with the list of ACEs specified.
+.RE
+\-S
+.RS 4
+Set an ACL of security descriptor with the list of ACEs
+Existing ACL is replaced entirely with the specified ACEs.
+.RE
+.PP
+Every ACE entry starts with "ACL:"
+One or more ACEs are specified within double quotes.
+Multiple ACEs are separated by a comma.
+.PP
+Following fields of an ACE can be modified with possible values:
+.PP
+SID: Either a name or a raw SID value.
+.PP
+type: ALLOWED (0x0), DENIED (0x1), OBJECT_ALLOWED (0x5), OBJECT_DENIED (0x6)
+.PP
+flags: OBJECT_INHERIT_FLAG (OI or 0x1), CONTAINER_INHERIT_FLAG (CI or 0x2), NO_PROPAGATE_INHERIT_FLAG (NI or 0x4), INHERIT_ONLY_FLAG (IO or 0x8), INHERITED_ACE_FLAG (IA or 0x10) or a combination/OR of these values.
+.PP
+mask: Either one of FULL, CHANGE, READ, a combination of R W X D P O, or a hex value
+.SH "EXAMPLES"
+.PP
+Add an ACE
+.br
+setcifsacl -a "ACL:CIFSTESTDOM\\user2:DENIED/0x1/D" <file_name>
+setcifsacl -a "ACL:CIFSTESTDOM\\user1:ALLOWED/OI|CI|NI/D" <file_name>
+.PP
+Delete an ACE
+.br
+setcifsacl -D "ACL:S-1-1-0:0x1/OI/0x1201ff" <file_name>
+.PP
+Modify an ACE
+.br
+setcifsacl -M "ACL:CIFSTESTDOM\\user1:ALLOWED/0x1f/CHANGE" <file_name>
+.PP
+Set an ACL
+.br
+setcifsacl -S "ACL:CIFSTESTDOM\\Administrator:0x0/0x0/FULL,
+.br
+ACL:CIFSTESTDOM\\user2:0x0/0x0/FULL," <file_name>
+.PP
+.SH "NOTES"
+.PP
+Kernel support for getcifsacl/setcifsacl utilities was initially introduced in the 2.6.37 kernel.
+.SH "SEE ALSO"
+.PP
+\fBmount.cifs\fR(8),
+\fBwinbindd\fR(8),
+\fBgetcifsacl\fR(1)
+.PP
+.SH "AUTHOR"
+.PP
+Shirish Pargaonkar wrote the setcifsacl program\&.
+.PP
+The
+Linux CIFS Mailing list
+is the preferred place to ask questions regarding these programs\&.

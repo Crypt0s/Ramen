@@ -1,0 +1,1 @@
+create  cifs.idmap    * * @sbindir@/cifs.idmap %k
