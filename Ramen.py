@@ -209,18 +209,19 @@ def signal_handler(signal, frame):
 
         print " -- SIGINT DETECTED, FLUSHING TO DISK -- "
         transaction.commit()
-        queue.close()
+        pdb.set_trace()
 
-        # snapshot the queue of targets
-        queue_snapshot = []
-        while not queue.empty():
-            queue_snapshot.append(queue.get())
 
-        # save the queue to disk
-        with open('data/queue.tmp',w) as tmpqueue:
-            tmpqueue.write(pickle.dumps(tmpqueue))
-
-        # Todo: we save the targets, their FS's, and therefore their file trees - we should be able to extrapolate what position we were at when we saved to disk using this info.
+        # Todo: Save queue status
+        ## snapshot the queue of targets
+        #queue.close()
+        #queue_snapshot = []
+        #while not queue.empty():
+        #    queue_snapshot.append(queue.get())
+        ## save the queue to disk
+        #with open('data/queue.tmp',w) as tmpqueue:
+        #    tmpqueue.write(pickle.dumps(tmpqueue))
+        ## Todo: we save the targets, their FS's, and therefore their file trees - we should be able to extrapolate what position we were at when we saved to disk using this info.
 
         print " -- Finished! -- "
         sys.exit()
