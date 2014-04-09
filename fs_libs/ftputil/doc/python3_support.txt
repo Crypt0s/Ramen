@@ -1,0 +1,178 @@
+Making ftputil Ready for Python 3
+=================================
+
+
+Summary
+-------
+
+First, here's a summary of my current plans:
+
+- The next ftputil version will be 3.0. It will work with all Python
+  versions starting at 2.6.
+
+- This ftputil version will change some APIs in ways that will require
+  changes in existing ftputil client code. This may include
+  non-trivial changes where ftputil previously accepted either byte
+  strings or unicode strings but will require unicode strings in the
+  future.
+
+Please read on for details, including the reasons for these plans.
+
+
+Current Situation
+-----------------
+
+Currently ftputil only supports Python 2.
+
+Several people have asked for Python 3 support; one entered a ticket
+on the ftputil project website. I also think that Python 3 becomes
+more and more widespread and so ftputil should be made compatible with
+Python 3.
+
+
+Future Development
+------------------
+
+Supported Python Versions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Although I want to adapt ftputil for use with Python 3, I have no
+plans to drop Python 2 support in ftputil anytime soon. Python 2 still
+is much more widely used.
+
+Originally the recommended approach for supporting Python 2 and 3 was
+to have a Python 2 version that could be translated with the `2to3`
+tool. However, nowadays another approach seems to be more common:
+supporting Python 2 and 3 with the very same code, without any
+conversions. From what I heard and read about the topic, I prefer the
+latter approach.
+
+In order to support Python 2 and 3 with the same code, I plan to drop
+support for Python versions before 2.6.
+
+Increasing the minimum Python version to 2.6 makes a common
+implementation easier because several significant Python 3 features
+have been backported to Python 2.6. Important examples are:
+
+  - from __future__ import print_function
+  - from __future__ import unicode_literals
+  - `io` library, simplifying on-the-fly encoding/decoding
+
+Incompatibilities With Previous ftputil Versions (2.8 and Earlier)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It seems that most of the semantics of ftputil can be kept. However,
+the handling of strings in Python 2 and 3 differs in non-trivial ways.
+Almost all APIs that used to expect byte strings in Python 2, expect
+unicode strings in Python 3. Actually, the native `str` type in Python
+2 is a byte string type, whereas `str` in Python 3 is a unicode
+strings type.
+
+I can imagine two approaches for dealing with strings in the next
+version of ftputil:
+
+1. Under Python 2, offer an API which is more "natural" for Python 2.
+   Under Python 3, offer an API which is more "natural" for Python 3.
+
+   Advantage: When run under Python 2, ftputil would behave the same
+   as before. Only few code changes (e. g. import statements) would
+   be necessary. Under Python 3, a more "modern" API could be used.
+
+   Disadvantage: Implementing two different APIs in the same code base
+   might be extremely difficult. Conditional testing for different
+   Python versions would probably be a mess and error-prone.
+
+2. Use the same API for Python 2 and 3.
+
+   Advantages: Using the same string types (bytes/unicode) under
+   Python 2 and 3 will make the migration of ftputil itself easier,
+   in particular the unit tests.
+
+   It will be easier for clients of ftputil to offer support for
+   Python 2 and 3 because they don't have to access ftputil via
+   different APIs that depend on the Python runtime environment.
+
+   Disadvantage: Code using previous ftputil versions will have to be
+   adapted, possibly in non-trivial ways.
+
+I prefer the second approach, using a unified API. Please read this
+thread on comp.lang.python for some discussion:
+https://groups.google.com/forum/?fromgroups=#!topic/comp.lang.python/XKof6DpNyH4
+
+In particular, so far I plan the following changes:
+
+- Opening remote files will behave as for the `io.open` function,
+  available in Python 2.6 and later (see
+  http://docs.python.org/2/library/io.html#io.open ; this is the same
+  as the built-in `open` function in Python 3).
+
+  When opening a file for reading in text mode, methods like `read`
+  and `readlines` will return unicode strings. When opening a file for
+  writing in text mode, the `write` and `writelines` methods will only
+  accept unicode strings. Also as documented for `io.open`, files
+  opened in binary mode will use only byte strings in their
+  interfaces.
+
+- Traditionally, using the "ascii" mode for file transfers has meant
+  that newline characters on writing were translated to "\r\n" pairs.
+  Versions of ftputil published so far have done the same when a file
+  was opened in text mode.
+
+  In the future, I'd like to handle the newline conversion as
+  documented for `io.open`. That is, newlines in remote files will be
+  written according to the operating system where the client runs.
+  This is in line with accesses to remote file systems like NFS or
+  CIFS.
+
+  So ftputil here will introduce a backward incompatibility, but the
+  API will correspond better to the behavior of the usual file system
+  API, which actually is a key idea in the design of ftputil.
+
+- Methods which accept and return a string, say `FTPHost.path.abspath`,
+  will return the same string type they've been called with. This is
+  the same behavior as in Python 3.
+
+- Some module names are going to change. For example,
+  `ftputil.ftp_error` will become `ftputil.error`.
+
+- Translation of file names from/to unicode will use ISO-8859-1, also
+  known as latin-1. For local file system accesses, Python 3 uses the
+  value of `sys.getfilesystemencoding()`, which often will be UTF-8. I
+  think using ISO-8859-1 is the better choice since the `ftplib` in
+  Python 3 also uses this encoding. Using the same encoding in ftputil
+  will make sure that directory and file names created by ftplib can
+  be read by ftputil and vice versa.
+
+  That said, if you can you should avoid using anything but ASCII
+  characters for directories and files on remote file systems. This
+  advice is the same as for older ftputil versions. ;-)
+
+  The mapping between actual bytes for directory and file names may
+  be different from previous ftputil versions. On the other hand, this
+  mapping hadn't even be defined previously.
+
+The above list contains the (in)compatibility changes that I've been
+able to think of so far. More issues may surface when I'm making the
+actual ftputil changes and after the first such version(s) of ftputil
+will have been published. I assume it was the same when the file
+system APIs in Python 3 were developed, so please bear with me. :-)
+
+If You Really Need Backward Compatibility: Creating an API Adapter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If there's a strong need for an API compatible to ftputil 2.8 and
+below, someone could write an adapter layer that could/would be used
+instead of the new ftputil API. I'm open to making simple API changes
+so that it becomes easier to use custom classes. For example, instead
+of hardcoding the use of the `ftputil._FTPFile` class in the `FTPHost`
+class, the `FTPHost` class can define the concrete FTP file class to
+use as a class attribute.
+
+
+What do you think about all this? Do you think it's reasonable? Have I
+overlooked something? Are there problems I may not have anticipated?
+
+Please give me feedback if there's something on your mind. :-)
+
+Best regards,
+Stefan

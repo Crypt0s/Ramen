@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
+<title>What's new in ftputil 3.0?</title>
+<meta name="date" content="2013-09-29" />
+<meta name="author" content="Stefan Schwarzer &lt;sschwarzer&#64;sschwarzer.net&gt;" />
+<style type="text/css">
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2005-05-26 12:51:39 +0200 (Thu, 26 May 2005) $
+:Version: $Revision: 3368 $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+*/
+
+/* "! important" is used here to override other ``margin-top`` and
+   ``margin-bottom`` styles that are later in the stylesheet or 
+   more specific.  See http://www.w3.org/TR/CSS1#the-cascade */
+.first {
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em }
+
+div.footer, div.header {
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.line-block {
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (<h#> element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid thin gray }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid thin black }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+tt.docutils {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="what-s-new-in-ftputil-3-0">
+<h1 class="title">What's new in ftputil 3.0?</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Version:</th>
+<td>3.0</td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2013-09-29</td></tr>
+<tr><th class="docinfo-name">Author:</th>
+<td>Stefan Schwarzer &lt;<a class="reference external" href="mailto:sschwarzer&#64;sschwarzer.net">sschwarzer&#64;sschwarzer.net</a>&gt;</td></tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#added-support-for-python-3" id="id1">Added support for Python 3</a></li>
+<li><a class="reference internal" href="#dropped-support-for-python-2-4-and-2-5" id="id2">Dropped support for Python 2.4 and 2.5</a></li>
+<li><a class="reference internal" href="#newlines-and-encoding-of-remote-file-content" id="id3">Newlines and encoding of remote file content</a></li>
+<li><a class="reference internal" href="#module-and-method-name-changes" id="id4">Module and method name changes</a></li>
+<li><a class="reference internal" href="#upload-and-download-modes" id="id5">Upload and download modes</a></li>
+<li><a class="reference internal" href="#custom-parsers-receive-lines-as-unicode-strings" id="id6">Custom parsers receive lines as unicode strings</a></li>
+<li><a class="reference internal" href="#porting-to-ftputil-3-0" id="id7">Porting to ftputil 3.0</a></li>
+<li><a class="reference internal" href="#questions-and-answers" id="id8">Questions and answers</a><ul>
+<li><a class="reference internal" href="#the-advice-to-adapt-code-to-the-new-string-types-is-rather-vague-can-t-you-be-more-specific" id="id9">The advice to &quot;adapt code to the new string types&quot; is rather vague. Can't you be more specific?</a></li>
+<li><a class="reference internal" href="#why-don-t-you-use-a-python-2-api-for-python-2-and-a-python-3-api-for-python-3" id="id10">Why don't you use a &quot;Python 2 API&quot; for Python 2 and a &quot;Python 3 API&quot; for Python 3?</a></li>
+<li><a class="reference internal" href="#why-don-t-you-use-the-six-module-to-be-able-to-support-python-2-4-and-2-5" id="id11">Why don't you use the six module to be able to support Python 2.4 and 2.5?</a></li>
+<li><a class="reference internal" href="#why-don-t-you-use-2to3-to-generate-the-python-3-version-of-ftputil" id="id12">Why don't you use 2to3 to generate the Python 3 version of ftputil?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="added-support-for-python-3">
+<h1><a class="toc-backref" href="#id1">Added support for Python 3</a></h1>
+<p>This ftputil release adds support for Python 3.0 and up.</p>
+<p>Python 2 and 3 are supported with the same source code. Also, the API
+including the sematics is the same. As for Python 3 code, in ftputil
+3.0 unicode is somewhat preferred over byte strings. On the other
+hand, in line with the file system APIs of both Python 2 and 3,
+methods take either byte strings or unicode strings. Methods that take
+and return strings (for example, <tt class="docutils literal">FTPHost.path.abspath</tt> or
+<tt class="docutils literal">FTPHost.listdir</tt>), return the same string type they get.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p>Both Python 2 and 3 have two &quot;string&quot; types where one type represents a
+sequence of bytes and the other type character (text) data.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="17%" />
+<col width="17%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Python version</th>
+<th class="head">Binary type</th>
+<th class="head">Text type</th>
+<th class="head">Default string literal type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>2</td>
+<td><tt class="docutils literal">str</tt></td>
+<td><tt class="docutils literal">unicode</tt></td>
+<td><tt class="docutils literal">str</tt> (= binary type)</td>
+</tr>
+<tr><td>3</td>
+<td><tt class="docutils literal">bytes</tt></td>
+<td><tt class="docutils literal">str</tt></td>
+<td><tt class="docutils literal">str</tt> (= text type)</td>
+</tr>
+</tbody>
+</table>
+<p>So both lines of Python have an <tt class="docutils literal">str</tt> type, but in Python 2 it's
+the byte type and in Python 3 the text type. The <tt class="docutils literal">str</tt> type is
+also what you get when you write a literal string without any
+prefixes. For example <tt class="docutils literal">&quot;Python&quot;</tt> is a binary string in Python 2
+and a text (unicode) string in Python 3.</p>
+<p class="last">If this seems confusing, please read <a class="reference external" href="http://docs.python.org/3.0/whatsnew/3.0.html#text-vs-data-instead-of-unicode-vs-8-bit">this description</a> in the Python
+documentation for more details.</p>
+</div>
+</div>
+<div class="section" id="dropped-support-for-python-2-4-and-2-5">
+<h1><a class="toc-backref" href="#id2">Dropped support for Python 2.4 and 2.5</a></h1>
+<p>To make it easier to use the same code for Python 2 and 3, I decided
+to use the Python 3 features backported to Python 2.6. As a
+consequence, ftputil 3.0 doesn't work with Python 2.4 and 2.5.</p>
+</div>
+<div class="section" id="newlines-and-encoding-of-remote-file-content">
+<h1><a class="toc-backref" href="#id3">Newlines and encoding of remote file content</a></h1>
+<p>Traditionally, &quot;text mode&quot; for FTP transfers meant translation to
+<tt class="docutils literal">\r\n</tt> newlines, even between transfers of Unix clients and Unix
+servers. Since this presumably most of the time is neither the expected
+nor the desired behavior, the <tt class="docutils literal">FTPHost.open</tt> method now has the API
+and semantics of the built-in <tt class="docutils literal">open</tt> function in Python 3. If you
+want the same API for <em>local</em> files in Python 2.6 and 2.7, you can use
+the <tt class="docutils literal">open</tt> function from the <tt class="docutils literal">io</tt> module.</p>
+<p>Thus, when opening remote files in <em>binary</em> mode, the new API does
+<em>not</em> accept an encoding argument. On the other hand, opening a file
+in text mode always implies an encoding step when writing and decoding
+step when reading files. If the <tt class="docutils literal">encoding</tt> argument isn't specified,
+it defaults to the value of <tt class="docutils literal">locale.getpreferredencoding(False)</tt>.</p>
+<p>Also as with Python 3's <tt class="docutils literal">open</tt> builtin, opening a file in binary
+mode for reading will give you byte string data. If you write to a
+file opened in binary mode, you must write byte strings. Along the
+same lines, files opened in text mode will give you unicode strings
+when read, and require unicode strings to be passed to write
+operations.</p>
+</div>
+<div class="section" id="module-and-method-name-changes">
+<h1><a class="toc-backref" href="#id4">Module and method name changes</a></h1>
+<p>In earlier ftputil versions, most module names had a redundant
+<tt class="docutils literal">ftp_</tt> prefix. In ftputil 3.0, these prefixes are removed. Of the
+module names that are part of the public ftputil API, this affects
+only <tt class="docutils literal">ftputil.error</tt> and <tt class="docutils literal">ftputil.stat</tt>.</p>
+<p>In Python 2.2, <tt class="docutils literal">file</tt> became an alias for <tt class="docutils literal">open</tt>, and previous
+ftputil versions also had an <tt class="docutils literal">FTPHost.file</tt> besides the
+<tt class="docutils literal">FTPHost.open</tt> method. In Python 3.0, the <tt class="docutils literal">file</tt> builtin was
+removed and the return values from the built-in <tt class="docutils literal">open</tt> methods
+are no longer <tt class="docutils literal">file</tt> instances. Along the same lines, ftputil 3.0
+also drops the <tt class="docutils literal">FTPHost.file</tt> alias and requires <tt class="docutils literal">FTPHost.open</tt>.</p>
+</div>
+<div class="section" id="upload-and-download-modes">
+<h1><a class="toc-backref" href="#id5">Upload and download modes</a></h1>
+<p>The <tt class="docutils literal">FTPHost</tt> methods for downloading and uploading files
+(<tt class="docutils literal">download</tt>, <tt class="docutils literal">download_if_newer</tt>, <tt class="docutils literal">upload</tt> and
+<tt class="docutils literal">upload_if_newer</tt>) now always use binary mode; a <tt class="docutils literal">mode</tt> argument
+is no longer needed or even allowed. Although this behavior makes
+downloads and uploads slightly less flexible, it should cover almost
+all use cases.</p>
+<p>If you <em>really</em> want to do a transfer involving files opened in text
+mode, you can still do:</p>
+<pre class="literal-block">
+import ftputil.file_transfer
+
+...
+
+with FTPHost.open(&quot;source.txt&quot;, &quot;r&quot;, encoding=&quot;UTF-8&quot;) as source, \
+     FTPHost.open(&quot;target.txt&quot;, &quot;w&quot;, encoding=&quot;latin1&quot;) as target:
+    ftputil.file_transfer.copyfileobj(source, target)
+</pre>
+<p>Note that it's not possible anymore to open one file in binary
+mode and the other file in text mode and transfer data between
+them with <tt class="docutils literal">copyfileobj</tt>. For example, opening the source in
+binary mode will read byte strings, but a target file opened in
+text mode will only allow writing of unicode strings. Then again,
+I assume that the cases where you want a mixed binary/text mode
+transfer should be <em>very</em> rare.</p>
+</div>
+<div class="section" id="custom-parsers-receive-lines-as-unicode-strings">
+<h1><a class="toc-backref" href="#id6">Custom parsers receive lines as unicode strings</a></h1>
+<p>Custom parsers, as described in the <a class="reference external" href="http://ftputil.sschwarzer.net/documentation#writing-directory-parsers">documentation</a>, receive a text
+line for each directory entry in the methods <tt class="docutils literal">ignores_line</tt> and
+<tt class="docutils literal">parse_line</tt>. In previous ftputil versions, the <tt class="docutils literal">line</tt> arguments
+were byte strings; now they're unicode strings.</p>
+<p>If you aren't sure what this is about, this may help: If you never
+used the <tt class="docutils literal">FTPHost.set_parser</tt> method, you can ignore this section.
+:-)</p>
+</div>
+<div class="section" id="porting-to-ftputil-3-0">
+<h1><a class="toc-backref" href="#id7">Porting to ftputil 3.0</a></h1>
+<ul class="simple">
+<li>It's likely that you catch an ftputil exception here and there.
+In that case, you need to change <tt class="docutils literal">import ftputil.ftp_error</tt>
+to <tt class="docutils literal">import ftputil.error</tt> and modify the uses of the module
+accordingly. If you used <tt class="docutils literal">from ftputil import ftp_error</tt>, you can
+change this to <tt class="docutils literal">from ftputil import error as ftp_error</tt> without
+changing the code using the module.</li>
+<li>If you use the download or upload methods, you need to remove
+the <tt class="docutils literal">mode</tt> argument from the call. If you used something
+else than <tt class="docutils literal">&quot;b&quot;</tt> for binary mode (which I assume to be unlikely),
+you'll need to adapt the code that calls the download or upload
+methods.</li>
+<li>If you use custom parsers, you'll need to change <tt class="docutils literal">import
+ftputil.ftp_stat</tt> to <tt class="docutils literal">import ftputil.stat</tt> and adapt your code in
+the module. Moreover, you might need to change your <tt class="docutils literal">ignores_line</tt>
+or <tt class="docutils literal">parse_line</tt> calls if they rely on their <tt class="docutils literal">line</tt> argument
+being a byte string.</li>
+<li>If you use remote files, especially ones opened in text mode, you
+may need to change your code to adapt to the changes in newline
+conversion, encoding and/or string type (see above sections).</li>
+</ul>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p>In the root directory of the installed ftputil package is a script
+<tt class="docutils literal">find_invalid_code.py</tt> which, given a start directory as
+argument, will scan that directory tree for code that may need to
+be fixed. However, this script uses very simple heuristics, so it
+may miss some problematic code or list perfectly valid code.</p>
+<p class="last">In particular, you may want to change the regular expression
+string <tt class="docutils literal">HOST_REGEX</tt> for the names you usually use for
+<tt class="docutils literal">FTPHost</tt> objects.</p>
+</div>
+</div>
+<div class="section" id="questions-and-answers">
+<h1><a class="toc-backref" href="#id8">Questions and answers</a></h1>
+<div class="section" id="the-advice-to-adapt-code-to-the-new-string-types-is-rather-vague-can-t-you-be-more-specific">
+<h2><a class="toc-backref" href="#id9">The advice to &quot;adapt code to the new string types&quot; is rather vague. Can't you be more specific?</a></h2>
+<p>It's difficult to be more specific without knowing your application.</p>
+<p>That said, best practices nowadays are:</p>
+<ul class="simple">
+<li>If you're dealing with character data, use unicode strings whenever
+possible. In Python 2, this means the <tt class="docutils literal">unicode</tt> type and in Python
+3 the <tt class="docutils literal">str</tt> type.</li>
+<li>Whenever you deal with binary data which is actually character data,
+decode it as <em>soon</em> as possible when <em>reading</em> data. Encode the data
+as <em>late</em> as possible when <em>writing</em> data.</li>
+</ul>
+<p>Yes, I know that's not much more specific.</p>
+</div>
+<div class="section" id="why-don-t-you-use-a-python-2-api-for-python-2-and-a-python-3-api-for-python-3">
+<h2><a class="toc-backref" href="#id10">Why don't you use a &quot;Python 2 API&quot; for Python 2 and a &quot;Python 3 API&quot; for Python 3?</a></h2>
+<p>(What's meant here is, for example, that if you opened a remote file
+as text, the read data could be of byte string type in Python 2 and of
+unicode type in Python 3. Similarly, under Python 2 a text file opened
+for writing could accept both byte strings and unicode strings in the
+<tt class="docutils literal">write*</tt> methods.)</p>
+<p>Actually, I had at first thought of implementing this but dropped the
+idea because it has several problems:</p>
+<ul class="simple">
+<li>Basically, I would have to support two APIs for the same set of
+methods. I can imagine that some things can be simplified by just
+using <tt class="docutils literal">str</tt> to convert to the &quot;right&quot; string type automatically,
+but I assume these opportunities would be rather the exception than
+the rule. I'd certainly not look forward to maintaining such code.</li>
+<li>Using two different APIs might require people to change their code
+if they move from using ftputil 3.x in Python 2 to using it in
+Python 3.</li>
+<li>Developers who want to support both Python 2 and 3 with the same
+source code (as I do now in ftputil) would &quot;inherit&quot; the &quot;dual API&quot;
+and would have to use different wrapper code depending on the Python
+version their code is run under.</li>
+</ul>
+<p>For these reasons, I <a class="reference external" href="https://groups.google.com/forum/?fromgroups=#!topic/comp.lang.python/XKof6DpNyH4">ended up</a> choosing the same API semantics for
+Python 2 and 3.</p>
+</div>
+<div class="section" id="why-don-t-you-use-the-six-module-to-be-able-to-support-python-2-4-and-2-5">
+<h2>Why don't you use the <a class="reference external" href="https://pypi.python.org/pypi/six/">six</a> module to be able to support Python 2.4 and 2.5?</h2>
+<p>There are two reasons:</p>
+<ul class="simple">
+<li>ftputil so far has no dependencies other than the Python standard
+library, and I think that's a nice feature.</li>
+<li>Although <tt class="docutils literal">six</tt> makes it easier to support Python 2.4/2.5 and
+Python 3 at the same time, the resulting code is somewhat awkward. I
+wanted a code base that feels more like &quot;modern Python&quot;; I wanted to
+use the Python 3 features backported to Python 2.6 and 2.7.</li>
+</ul>
+</div>
+<div class="section" id="why-don-t-you-use-2to3-to-generate-the-python-3-version-of-ftputil">
+<h2>Why don't you use <a class="reference external" href="http://docs.python.org/2/library/2to3.html">2to3</a> to generate the Python 3 version of ftputil?</h2>
+<p>I had considered this when I started adapting the ftputil source code
+for Python 3. On the other hand, although using 2to3 used to be the
+recommended approach for Python 3 support, even <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/python3/">rather large
+projects</a> have chosen the route of having one code base and using it
+unmodified for Python 2 and 3.</p>
+<p>When I looked into this approach for ftputil 3.0, it became quickly
+obvious that it would be easier and I found it worked out very well.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

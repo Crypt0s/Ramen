@@ -1,0 +1,1661 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
+<title>ftputil -- a high-level FTP client library</title>
+<meta name="date" content="2014-04-03" />
+<meta name="author" content="Stefan Schwarzer &lt;sschwarzer&#64;sschwarzer.net&gt;" />
+<style type="text/css">
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2005-05-26 12:51:39 +0200 (Thu, 26 May 2005) $
+:Version: $Revision: 3368 $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+*/
+
+/* "! important" is used here to override other ``margin-top`` and
+   ``margin-bottom`` styles that are later in the stylesheet or 
+   more specific.  See http://www.w3.org/TR/CSS1#the-cascade */
+.first {
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em }
+
+div.footer, div.header {
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.line-block {
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (<h#> element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid thin gray }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid thin black }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+tt.docutils {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="ftputil-a-high-level-ftp-client-library">
+<h1 class="title"><tt class="docutils literal">ftputil</tt> -- a high-level FTP client library</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Version:</th>
+<td>3.0</td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2014-04-03</td></tr>
+<tr class="field"><th class="docinfo-name">Summary:</th><td class="field-body">high-level FTP client library for Python</td>
+</tr>
+<tr class="field"><th class="docinfo-name">Keywords:</th><td class="field-body">FTP, <tt class="docutils literal">ftplib</tt> substitute, virtual filesystem, pure Python</td>
+</tr>
+<tr><th class="docinfo-name">Author:</th>
+<td>Stefan Schwarzer &lt;<a class="reference external" href="mailto:sschwarzer&#64;sschwarzer.net">sschwarzer&#64;sschwarzer.net</a>&gt;</td></tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id5">Introduction</a></li>
+<li><a class="reference internal" href="#ftputil-features" id="id6"><tt class="docutils literal">ftputil</tt> features</a></li>
+<li><a class="reference internal" href="#exception-hierarchy" id="id7">Exception hierarchy</a></li>
+<li><a class="reference internal" href="#directory-and-file-names" id="id8">Directory and file names</a></li>
+<li><a class="reference internal" href="#ftphost-objects" id="id9"><tt class="docutils literal">FTPHost</tt> objects</a><ul>
+<li><a class="reference internal" href="#construction" id="id10">Construction</a><ul>
+<li><a class="reference internal" href="#basics" id="id11">Basics</a></li>
+<li><a class="reference internal" href="#session-factories" id="id12">Session factories</a></li>
+<li><a class="reference internal" href="#support-for-the-with-statement" id="id13">Support for the <tt class="docutils literal">with</tt> statement</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hidden-files-and-directories" id="id14">Hidden files and directories</a></li>
+<li><a class="reference internal" href="#ftphost-attributes-and-methods" id="id15"><tt class="docutils literal">FTPHost</tt> attributes and methods</a><ul>
+<li><a class="reference internal" href="#attributes" id="id16">Attributes</a></li>
+<li><a class="reference internal" href="#remote-file-system-navigation" id="id17">Remote file system navigation</a></li>
+<li><a class="reference internal" href="#uploading-and-downloading-files" id="id18">Uploading and downloading files</a></li>
+<li><a class="reference internal" href="#id1" id="id19">Time zone correction</a></li>
+<li><a class="reference internal" href="#creating-and-removing-directories" id="id20">Creating and removing directories</a></li>
+<li><a class="reference internal" href="#removing-files-and-links" id="id21">Removing files and links</a></li>
+<li><a class="reference internal" href="#retrieving-information-about-directories-files-and-links" id="id22">Retrieving information about directories, files and links</a></li>
+<li><a class="reference internal" href="#local-caching-of-file-system-information" id="id23">Local caching of file system information</a></li>
+<li><a class="reference internal" href="#iteration-over-directories" id="id24">Iteration over directories</a></li>
+<li><a class="reference internal" href="#other-methods" id="id25">Other methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#file-like-objects" id="id26">File-like objects</a><ul>
+<li><a class="reference internal" href="#id2" id="id27">Construction</a><ul>
+<li><a class="reference internal" href="#id3" id="id28">Basics</a></li>
+<li><a class="reference internal" href="#id4" id="id29">Support for the <tt class="docutils literal">with</tt> statement</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attributes-and-methods" id="id30">Attributes and methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-directory-parsers" id="id31">Writing directory parsers</a></li>
+<li><a class="reference internal" href="#faq-tips-and-tricks" id="id32">FAQ / Tips and tricks</a><ul>
+<li><a class="reference internal" href="#where-can-i-get-the-latest-version" id="id33">Where can I get the latest version?</a></li>
+<li><a class="reference internal" href="#is-there-a-mailing-list-on-ftputil" id="id34">Is there a mailing list on <tt class="docutils literal">ftputil</tt>?</a></li>
+<li><a class="reference internal" href="#i-found-a-bug-what-now" id="id35">I found a bug! What now?</a></li>
+<li><a class="reference internal" href="#does-ftputil-support-ssl" id="id36">Does <tt class="docutils literal">ftputil</tt> support SSL?</a></li>
+<li><a class="reference internal" href="#how-do-i-connect-to-a-non-default-port" id="id37">How do I connect to a non-default port?</a></li>
+<li><a class="reference internal" href="#how-do-i-set-active-or-passive-mode" id="id38">How do I set active or passive mode?</a></li>
+<li><a class="reference internal" href="#how-can-i-debug-an-ftp-connection-problem" id="id39">How can I debug an FTP connection problem?</a></li>
+<li><a class="reference internal" href="#conditional-upload-download-to-from-a-server-in-a-different-time-zone" id="id40">Conditional upload/download to/from a server in a different time zone</a></li>
+<li><a class="reference internal" href="#when-i-use-ftputil-all-i-get-is-a-parsererror-exception" id="id41">When I use <tt class="docutils literal">ftputil</tt>, all I get is a <tt class="docutils literal">ParserError</tt> exception</a></li>
+<li><a class="reference internal" href="#isdir-isfile-or-islink-incorrectly-return-false" id="id42"><tt class="docutils literal">isdir</tt>, <tt class="docutils literal">isfile</tt> or <tt class="docutils literal">islink</tt> incorrectly return <tt class="docutils literal">False</tt></a></li>
+<li><a class="reference internal" href="#i-don-t-find-an-answer-to-my-problem-in-this-document" id="id43">I don't find an answer to my problem in this document</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bugs-and-limitations" id="id44">Bugs and limitations</a></li>
+<li><a class="reference internal" href="#files" id="id45">Files</a></li>
+<li><a class="reference internal" href="#references" id="id46">References</a></li>
+<li><a class="reference internal" href="#authors" id="id47">Authors</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h1><a class="toc-backref" href="#id5">Introduction</a></h1>
+<p>The <tt class="docutils literal">ftputil</tt> module is a high-level interface to the <a class="reference external" href="http://www.python.org/doc/current/lib/module-ftplib.html">ftplib</a>
+module. The <a class="reference internal" href="#ftphost-objects">FTPHost objects</a> generated from it allow many operations
+similar to those of <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html">os</a>, <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.path.html">os.path</a> and <a class="reference external" href="http://www.python.org/doc/current/lib/module-shutil.html">shutil</a>.</p>
+<p>Examples:</p>
+<pre class="literal-block">
+import ftputil
+
+# Download some files from the login directory.
+with ftputil.FTPHost(&quot;ftp.domain.com&quot;, &quot;user&quot;, &quot;password&quot;) as host:
+    names = host.listdir(host.curdir)
+    for name in names:
+        if host.path.isfile(name):
+            host.download(name, name)  # remote, local
+    # Make a new directory and copy a remote file into it.
+    host.mkdir(&quot;newdir&quot;)
+    with host.open(&quot;index.html&quot;, &quot;rb&quot;) as source:
+        with host.open(&quot;newdir/index.html&quot;, &quot;wb&quot;) as target:
+            host.copyfileobj(source, target)  # similar to shutil.copyfileobj
+</pre>
+<p>Also, there are <a class="reference internal" href="#ftphost-lstat">FTPHost.lstat</a> and <a class="reference internal" href="#ftphost-stat">FTPHost.stat</a> to request size and
+modification time of a file. The latter can also follow links, similar
+to <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html#os.stat">os.stat</a>. <a class="reference internal" href="#ftphost-walk">FTPHost.walk</a> and <a class="reference internal" href="#ftphost-path-walk">FTPHost.path.walk</a> work, too.</p>
+</div>
+<div class="section" id="ftputil-features">
+<h1><a class="toc-backref" href="#id6"><tt class="docutils literal">ftputil</tt> features</a></h1>
+<ul class="simple">
+<li>Method names are familiar from Python's <tt class="docutils literal">os</tt>, <tt class="docutils literal">os.path</tt> and
+<tt class="docutils literal">shutil</tt> modules</li>
+<li>Remote file system navigation (<tt class="docutils literal">getcwd</tt>, <tt class="docutils literal">chdir</tt>)</li>
+<li>Upload and download files (<tt class="docutils literal">upload</tt>, <tt class="docutils literal">upload_if_newer</tt>,
+<tt class="docutils literal">download</tt>, <tt class="docutils literal">download_if_newer</tt>)</li>
+<li>Time zone synchronization between client and server (needed
+for <tt class="docutils literal">upload_if_newer</tt> and <tt class="docutils literal">download_if_newer</tt>)</li>
+<li>Create and remove directories (<tt class="docutils literal">mkdir</tt>, <tt class="docutils literal">makedirs</tt>, <tt class="docutils literal">rmdir</tt>,
+<tt class="docutils literal">rmtree</tt>) and remove files (<tt class="docutils literal">remove</tt>)</li>
+<li>Get information about directories, files and links (<tt class="docutils literal">listdir</tt>,
+<tt class="docutils literal">stat</tt>, <tt class="docutils literal">lstat</tt>, <tt class="docutils literal">exists</tt>, <tt class="docutils literal">isdir</tt>, <tt class="docutils literal">isfile</tt>, <tt class="docutils literal">islink</tt>,
+<tt class="docutils literal">abspath</tt>, <tt class="docutils literal">split</tt>, <tt class="docutils literal">join</tt>, <tt class="docutils literal">dirname</tt>, <tt class="docutils literal">basename</tt> etc.)</li>
+<li>Iterate over remote file systems (<tt class="docutils literal">walk</tt>)</li>
+<li>Local caching of results from <tt class="docutils literal">lstat</tt> and <tt class="docutils literal">stat</tt> calls to reduce
+network access (also applies to <tt class="docutils literal">exists</tt>, <tt class="docutils literal">getmtime</tt> etc.).</li>
+<li>Read files from and write files to remote hosts via
+file-like objects (<tt class="docutils literal">FTPHost.open</tt>; the generated file-like objects
+have many common methods like <tt class="docutils literal">read</tt>, <tt class="docutils literal">readline</tt>, <tt class="docutils literal">readlines</tt>,
+<tt class="docutils literal">write</tt>, <tt class="docutils literal">writelines</tt>, <tt class="docutils literal">close</tt> and can do automatic line
+ending conversions on the fly, i. e. text/binary mode).</li>
+</ul>
+</div>
+<div class="section" id="exception-hierarchy">
+<h1><a class="toc-backref" href="#id7">Exception hierarchy</a></h1>
+<p>The exceptions are in the namespace of the <tt class="docutils literal">ftputil.error</tt> module, e. g.
+<tt class="docutils literal">ftputil.error.TemporaryError</tt>.</p>
+<p>The exception classes are organized as follows:</p>
+<pre class="literal-block">
+FTPError
+    FTPOSError(FTPError, OSError)
+        PermanentError(FTPOSError)
+            CommandNotImplementedError(PermanentError)
+        TemporaryError(FTPOSError)
+    FTPIOError(FTPError)
+    InternalError(FTPError)
+        InaccessibleLoginDirError(InternalError)
+        ParserError(InternalError)
+        RootDirError(InternalError)
+        TimeShiftError(InternalError)
+</pre>
+<p>and are described here:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal">FTPError</tt></p>
+<p>is the root of the exception hierarchy of the module.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">FTPOSError</tt></p>
+<p>is derived from <tt class="docutils literal">OSError</tt>. This is for similarity between the
+os module and <tt class="docutils literal">FTPHost</tt> objects. Compare</p>
+<pre class="literal-block">
+try:
+    os.chdir(&quot;nonexisting_directory&quot;)
+except OSError:
+    ...
+</pre>
+<p>with</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)
+try:
+    host.chdir(&quot;nonexisting_directory&quot;)
+except OSError:
+    ...
+</pre>
+<p>Imagine a function</p>
+<pre class="literal-block">
+def func(path, file):
+    ...
+</pre>
+<p>which works on the local file system and catches <tt class="docutils literal">OSErrors</tt>. If you
+change the parameter list to</p>
+<pre class="literal-block">
+def func(path, file, os=os):
+    ...
+</pre>
+<p>where <tt class="docutils literal">os</tt> denotes the <tt class="docutils literal">os</tt> module, you can call the function also as</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)
+func(path, file, os=host)
+</pre>
+<p>to use the same code for both a local and remote file system.
+Another similarity between <tt class="docutils literal">OSError</tt> and <tt class="docutils literal">FTPOSError</tt> is that
+the latter holds the FTP server return code in the <tt class="docutils literal">errno</tt>
+attribute of the exception object and the error text in
+<tt class="docutils literal">strerror</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">PermanentError</tt></p>
+<p>is raised for 5xx return codes from the FTP server. This
+corresponds to <tt class="docutils literal">ftplib.error_perm</tt> (though <tt class="docutils literal">PermanentError</tt> and
+<tt class="docutils literal">ftplib.error_perm</tt> are <em>not</em> identical).</p>
+</li>
+<li><p class="first"><tt class="docutils literal">CommandNotImplementedError</tt></p>
+<p>indicates that an underlying command the code tries to use is not
+implemented. For an example, see the description of the
+<a class="reference internal" href="#ftphost-chmod">FTPHost.chmod</a> method.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">TemporaryError</tt></p>
+<p>is raised for FTP return codes from the 4xx category. This
+corresponds to <tt class="docutils literal">ftplib.error_temp</tt> (though <tt class="docutils literal">TemporaryError</tt> and
+<tt class="docutils literal">ftplib.error_temp</tt> are <em>not</em> identical).</p>
+</li>
+<li><p class="first"><tt class="docutils literal">FTPIOError</tt></p>
+<p>denotes an I/O error on the remote host. This appears
+mainly with file-like objects that are retrieved by calling
+<tt class="docutils literal">FTPHost.open</tt>. Compare</p>
+<pre class="literal-block">
+&gt;&gt;&gt; try:
+...     f = open(&quot;not_there&quot;)
+... except IOError as obj:
+...     print obj.errno
+...     print obj.strerror
+...
+2
+No such file or directory
+</pre>
+<p>with</p>
+<pre class="literal-block">
+&gt;&gt;&gt; host = ftputil.FTPHost(&quot;host&quot;, &quot;user&quot;, &quot;password&quot;)
+&gt;&gt;&gt; try:
+...     f = host.open(&quot;not_there&quot;)
+... except IOError as obj:
+...     print obj.errno
+...     print obj.strerror
+...
+550
+550 not_there: No such file or directory.
+</pre>
+<p>As you can see, both code snippets are similar. However, the error
+codes aren't the same.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">InternalError</tt></p>
+<p>subsumes exception classes for signaling errors due to limitations
+of the FTP protocol or the concrete implementation of <tt class="docutils literal">ftputil</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">InaccessibleLoginDirError</tt></p>
+<p>This exception is raised if the directory in which &quot;you&quot; are placed
+upon login is not accessible, i. e. a <tt class="docutils literal">chdir</tt> call with the
+directory as argument would fail.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">ParserError</tt></p>
+<p>is used for errors during the parsing of directory
+listings from the server. This exception is used by the <tt class="docutils literal">FTPHost</tt>
+methods <tt class="docutils literal">stat</tt>, <tt class="docutils literal">lstat</tt>, and <tt class="docutils literal">listdir</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">RootDirError</tt></p>
+<p>Because of the implementation of the <tt class="docutils literal">lstat</tt> method it is not
+possible to do a <tt class="docutils literal">stat</tt> call on the root directory <tt class="docutils literal">/</tt>.
+If you know <em>any</em> way to do it, please let me know. :-)</p>
+<p>This problem does <em>not</em> affect stat calls on items <em>in</em> the root
+directory.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">TimeShiftError</tt></p>
+<p>is used to denote errors which relate to setting the <a class="reference internal" href="#time-shift">time shift</a>,
+<em>for example</em> trying to set a value which is no multiple of a full
+hour.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="directory-and-file-names">
+<h1><a class="toc-backref" href="#id8">Directory and file names</a></h1>
+<p>Methods that take names of directories and files can take either byte
+strings (<tt class="docutils literal">str</tt> on Python 2, <tt class="docutils literal">bytes</tt> on Python 3) or unicode
+strings (<tt class="docutils literal">unicode</tt> on Python 2, <tt class="docutils literal">str</tt> on Python 3).</p>
+<p>Byte strings will be sent to the FTP server as-is. Unicode strings
+will be encoded with the encoding returned from
+<tt class="docutils literal">locale.getpreferredencoding</tt>. This is the same semantics as for
+locally used names in Python 3.</p>
+<p>Methods that take and return a directory or file name will return the
+same string type as they're given. For example, if the argument to
+<tt class="docutils literal">FTPHost.path.abspath</tt> is a byte string, you'll get a byte string
+back. This behavior is the same as for the local file system API in
+Python 2 and 3.</p>
+</div>
+<div class="section" id="ftphost-objects">
+<h1><a class="toc-backref" href="#id9"><tt class="docutils literal">FTPHost</tt> objects</a></h1>
+<div class="section" id="construction">
+<span id="ftphost-construction"></span><h2><a class="toc-backref" href="#id10">Construction</a></h2>
+<div class="section" id="basics">
+<h3><a class="toc-backref" href="#id11">Basics</a></h3>
+<p><tt class="docutils literal">FTPHost</tt> instances can be generated with the following call:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(host, user, password, account,
+                       session_factory=ftplib.FTP)
+</pre>
+<p>The first four parameters are strings with the same meaning as for the
+FTP class in the <tt class="docutils literal">ftplib</tt> module.</p>
+</div>
+<div class="section" id="session-factories">
+<h3><a class="toc-backref" href="#id12">Session factories</a></h3>
+<p>The keyword argument <tt class="docutils literal">session_factory</tt> may be used to generate FTP
+connections with other factories than the default <tt class="docutils literal">ftplib.FTP</tt>. For
+example, the standard library of Python 2.7 contains a class
+<tt class="docutils literal">ftplib.FTP_TLS</tt> which extends <tt class="docutils literal">ftplib.FTP</tt> to use an encrypted
+connection.</p>
+<p>In fact, all positional and keyword arguments other than
+<tt class="docutils literal">session_factory</tt> are passed to the factory to generate a new
+background session. This happens for every remote file that is opened;
+see below.</p>
+<p>This functionality of the constructor also allows to wrap
+<tt class="docutils literal">ftplib.FTP</tt> objects to do something that wouldn't be possible with
+the <tt class="docutils literal">ftplib.FTP</tt> constructor alone.</p>
+<p>As an example, assume you want to connect to another than the default
+port, but <tt class="docutils literal">ftplib.FTP</tt> only offers this by means of its <tt class="docutils literal">connect</tt>
+method, not via its constructor. The solution is to use a wrapper
+class:</p>
+<pre class="literal-block">
+import ftplib
+import ftputil
+
+EXAMPLE_PORT = 50001
+
+class MySession(ftplib.FTP):
+
+    def __init__(self, host, userid, password, port):
+        &quot;&quot;&quot;Act like ftplib.FTP's constructor but connect to another port.&quot;&quot;&quot;
+        ftplib.FTP.__init__(self)
+        self.connect(host, port)
+        self.login(userid, password)
+
+# Try _not_ to use an instance `MySession()` as factory, -
+# use the class itself.
+host = ftputil.FTPHost(host, userid, password,
+                       port=EXAMPLE_PORT, session_factory=MySession)
+# Use `host` as usual.
+</pre>
+<p>On login, the format of the directory listings (needed for stat'ing
+files and directories) should be determined automatically. If not,
+please <a class="reference external" href="http://ftputil.sschwarzer.net/issuetrackernotes">file a bug report</a>.</p>
+</div>
+<div class="section" id="support-for-the-with-statement">
+<h3><a class="toc-backref" href="#id13">Support for the <tt class="docutils literal">with</tt> statement</a></h3>
+<p><cite>FTPHost</cite> objects can be used in the <tt class="docutils literal">with</tt> statement:</p>
+<pre class="literal-block">
+import ftputil
+
+with ftputil.FTPHost(host, user, password) as host:
+    print host.listdir(host.curdir)
+</pre>
+<p>After the <tt class="docutils literal">with</tt> block, the <tt class="docutils literal">FTPHost</tt> instance and the
+associated FTP sessions will be closed automatically.</p>
+<p>If something goes wrong during the <tt class="docutils literal">FTPHost</tt> construction or in the
+body of the <tt class="docutils literal">with</tt> statement, the instance is closed as well.
+Exceptions will be propagated (as with <tt class="docutils literal">try ... finally</tt>).</p>
+</div>
+</div>
+<div class="section" id="hidden-files-and-directories">
+<h2><a class="toc-backref" href="#id14">Hidden files and directories</a></h2>
+<p>Whether ftputil sees &quot;hidden&quot; files and directories (usually files or
+directories whose names start with a dot) depends on the FTP server
+configuration. By default, ftputil uses the <tt class="docutils literal"><span class="pre">-a</span></tt> option in the FTP
+<tt class="docutils literal">LIST</tt> command to find hidden files. However, the server may ignore
+this.</p>
+<p>If using the <tt class="docutils literal"><span class="pre">-a</span></tt> option leads to problems, for example if an
+FTP server causes an exception, you may switch off the use of the
+option:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(host, user, password, account,
+                       session_factory=ftplib.FTP)
+host.use_list_a_option = False
+</pre>
+</div>
+<div class="section" id="ftphost-attributes-and-methods">
+<h2><a class="toc-backref" href="#id15"><tt class="docutils literal">FTPHost</tt> attributes and methods</a></h2>
+<div class="section" id="attributes">
+<h3><a class="toc-backref" href="#id16">Attributes</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">curdir</tt>, <tt class="docutils literal">pardir</tt>, <tt class="docutils literal">sep</tt></p>
+<p>are strings which denote the current and the parent directory on the
+remote server. <tt class="docutils literal">sep</tt> holds the path separator. Though <a class="reference external" href="http://www.ietf.org/rfc/rfc959.txt">RFC 959</a>
+(File Transfer Protocol) notes that these values may depend on the
+FTP server implementation, the Unix variants seem to work well in
+practice, even for non-Unix servers.</p>
+<p>Nevertheless, it's recommended that you don't hardcode these values
+for remote paths, but use <a class="reference internal" href="#ftphost-path">FTPHost.path</a> as you would use
+<tt class="docutils literal">os.path</tt> to write platform-independent Python code for local
+filesystems. Keep in mind that most, <em>but not all</em>, arguments of
+<tt class="docutils literal">FTPHost</tt> methods refer to remote directories or files. For
+example, in <a class="reference internal" href="#uploading-and-downloading-files">FTPHost.upload</a>, the first argument is a local
+path and the second a remote path. Both of these should use their
+respective path separators.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="remote-file-system-navigation">
+<h3><a class="toc-backref" href="#id17">Remote file system navigation</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">getcwd()</tt></p>
+<p>returns the absolute current directory on the remote host. This
+method works like <tt class="docutils literal">os.getcwd</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">chdir(directory)</tt></p>
+<p>sets the current directory on the FTP server. This resembles
+<tt class="docutils literal">os.chdir</tt>, as you may have expected.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="uploading-and-downloading-files">
+<span id="callback-function"></span><h3><a class="toc-backref" href="#id18">Uploading and downloading files</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">upload(source, target, callback=None)</tt></p>
+<p>copies a local source file (given by a filename, i. e. a string)
+to the remote host under the name target. Both <tt class="docutils literal">source</tt> and
+<tt class="docutils literal">target</tt> may be absolute paths or relative to their corresponding
+current directory (on the local or the remote host, respectively).</p>
+<p>The file content is always transferred in binary mode.</p>
+<p>The callback, if given, will be invoked for each transferred chunk
+of data:</p>
+<pre class="literal-block">
+callback(chunk)
+</pre>
+<p>where <tt class="docutils literal">chunk</tt> is a bytestring. An example usage of a callback
+method is to display a progress indicator.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">download(source, target, callback=None)</tt></p>
+<p>performs a download from the remote source file to a local target
+file. Both <tt class="docutils literal">source</tt> and <tt class="docutils literal">target</tt> are strings. See the
+description of <tt class="docutils literal">upload</tt> for more details.</p>
+</li>
+</ul>
+<ul id="upload-if-newer">
+<li><p class="first"><tt class="docutils literal">upload_if_newer(source, target, callback=None)</tt></p>
+<p>is similar to the <tt class="docutils literal">upload</tt> method. The only difference is that the
+upload is only invoked if the time of the last modification for the
+source file is more recent than that of the target file or the
+target doesn't exist at all. The check for the last modification
+time considers the precision of the timestamps and transfers a file
+&quot;if in doubt&quot;. Consequently the code</p>
+<pre class="literal-block">
+host.upload_if_newer(&quot;source_file&quot;, &quot;target_file&quot;)
+time.sleep(10)
+host.upload_if_newer(&quot;source_file&quot;, &quot;target_file&quot;)
+</pre>
+<p>might upload the file again if the timestamp of the target file is
+precise up to a minute, which is typically the case because the
+remote datetime is determined by parsing a directory listing from
+the server. To avoid unnecessary transfers, wait at least a minute
+between calls of <tt class="docutils literal">upload_if_newer</tt> for the same file. If it still
+seems that a file is uploaded unnecessarily (or not when it should),
+read the subsection on <a class="reference internal" href="#time-shift">time shift</a> settings.</p>
+<p>If an upload actually happened, the return value of
+<tt class="docutils literal">upload_if_newer</tt> is a <tt class="docutils literal">True</tt>, else <tt class="docutils literal">False</tt>.</p>
+<p>Note that the method only checks the existence and/or the
+modification time of the source and target file; it doesn't
+compare any other file properties, say, the file size.</p>
+<p>This also means that if a transfer is interrupted, the remote file
+will have a newer modification time than the local file, and thus
+the transfer won't be repeated if <tt class="docutils literal">upload_if_newer</tt> is used a
+second time. There are at least two possibilities after a failed
+upload:</p>
+<ul class="simple">
+<li>use <tt class="docutils literal">upload</tt> instead of <tt class="docutils literal">upload_if_newer</tt>, or</li>
+<li>remove the incomplete target file with <tt class="docutils literal">FTPHost.remove</tt>, then
+use <tt class="docutils literal">upload</tt> or <tt class="docutils literal">upload_if_newer</tt> to transfer it again.</li>
+</ul>
+</li>
+</ul>
+<ul id="download-if-newer">
+<li><p class="first"><tt class="docutils literal">download_if_newer(source, target, callback=None)</tt></p>
+<p>corresponds to <tt class="docutils literal">upload_if_newer</tt> but performs a download from the
+server to the local host. Read the descriptions of download and
+<tt class="docutils literal">upload_if_newer</tt> for more information. If a download actually
+happened, the return value is <tt class="docutils literal">True</tt>, else <tt class="docutils literal">False</tt>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<span id="time-zone-correction"></span><span id="time-shift"></span><h3><a class="toc-backref" href="#id19">Time zone correction</a></h3>
+<p>If the client where <tt class="docutils literal">ftputil</tt> runs and the server have a different
+understanding of their local times, this has to be taken into account
+for <tt class="docutils literal">upload_if_newer</tt> and <tt class="docutils literal">download_if_newer</tt> to work correctly.</p>
+<p>Note that even if the client and the server are in the same time zone
+(or even on the same computer), the time shift value (see below) may
+be different from zero. For example, my computer is set to use local
+time whereas the server running on the very same host insists on using
+UTC time.</p>
+<ul id="set-time-shift">
+<li><p class="first"><tt class="docutils literal">set_time_shift(time_shift)</tt></p>
+<p>sets the so-called time shift value, measured in seconds. The time
+shift is the difference between the local time of the server and the
+local time of the client at a given moment, i. e. by definition</p>
+<pre class="literal-block">
+time_shift = server_time - client_time
+</pre>
+<p>Setting this value is important for <a class="reference internal" href="#upload-if-newer">upload_if_newer</a> and
+<a class="reference internal" href="#download-if-newer">download_if_newer</a> to work correctly even if the time zone of the
+FTP server differs from that of the client. Note that the time shift
+value <em>can be negative</em>.</p>
+<p>If the time shift value is invalid, e. g. no multiple of a full hour
+or its absolute value larger than 24 hours, a <tt class="docutils literal">TimeShiftError</tt> is
+raised.</p>
+<p>See also <a class="reference internal" href="#synchronize-times">synchronize_times</a> for a way to set the time shift with a
+simple method call.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">time_shift()</tt></p>
+<p>returns the currently-set time shift value. See <tt class="docutils literal">set_time_shift</tt>
+above for its definition.</p>
+</li>
+</ul>
+<ul id="synchronize-times">
+<li><p class="first"><tt class="docutils literal">synchronize_times()</tt></p>
+<p>synchronizes the local times of the server and the client, so that
+<a class="reference internal" href="#upload-if-newer">upload_if_newer</a> and <a class="reference internal" href="#download-if-newer">download_if_newer</a> work as expected, even
+if the client and the server use different time zones. For this
+to work, <em>all</em> of the following conditions must be true:</p>
+<ul class="simple">
+<li>The connection between server and client is established.</li>
+<li>The client has write access to the directory that is current when
+<tt class="docutils literal">synchronize_times</tt> is called.</li>
+</ul>
+<p>If you can't fulfill these conditions, you can nevertheless set the
+time shift value explicitly with <a class="reference internal" href="#set-time-shift">set_time_shift</a>. Trying to call
+<tt class="docutils literal">synchronize_times</tt> if the above conditions aren't met results in
+a <tt class="docutils literal">TimeShiftError</tt> exception.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="creating-and-removing-directories">
+<h3><a class="toc-backref" href="#id20">Creating and removing directories</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">mkdir(path, [mode])</tt></p>
+<p>makes the given directory on the remote host. This does <em>not</em>
+construct &quot;intermediate&quot; directories that don't already exist. The
+<tt class="docutils literal">mode</tt> parameter is ignored; this is for compatibility with
+<tt class="docutils literal">os.mkdir</tt> if an <tt class="docutils literal">FTPHost</tt> object is passed into a function
+instead of the <tt class="docutils literal">os</tt> module. See the explanation in the subsection
+<a class="reference internal" href="#exception-hierarchy">Exception hierarchy</a>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">makedirs(path, [mode])</tt></p>
+<p>works similar to <tt class="docutils literal">mkdir</tt> (see above), but also makes intermediate
+directories like <tt class="docutils literal">os.makedirs</tt>. The <tt class="docutils literal">mode</tt> parameter is only
+there for compatibility with <tt class="docutils literal">os.makedirs</tt> and is ignored.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">rmdir(path)</tt></p>
+<p>removes the given remote directory. If it's not empty, raise
+a <tt class="docutils literal">PermanentError</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">rmtree(path, ignore_errors=False, onerror=None)</tt></p>
+<p>removes the given remote, possibly non-empty, directory tree.
+The interface of this method is rather complex, in favor of
+compatibility with <tt class="docutils literal">shutil.rmtree</tt>.</p>
+<p>If <tt class="docutils literal">ignore_errors</tt> is set to a true value, errors are ignored.
+If <tt class="docutils literal">ignore_errors</tt> is a false value <em>and</em> <tt class="docutils literal">onerror</tt> isn't
+set, all exceptions occurring during the tree iteration and
+processing are raised. These exceptions are all of type
+<tt class="docutils literal">PermanentError</tt>.</p>
+<p>To distinguish between different kinds of errors, pass in a callable
+for <tt class="docutils literal">onerror</tt>. This callable must accept three arguments:
+<tt class="docutils literal">func</tt>, <tt class="docutils literal">path</tt> and <tt class="docutils literal">exc_info</tt>. <tt class="docutils literal">func</tt> is a bound method
+object, <em>for example</em> <tt class="docutils literal">your_host_object.listdir</tt>. <tt class="docutils literal">path</tt> is the
+path that was the recent argument of the respective method
+(<tt class="docutils literal">listdir</tt>, <tt class="docutils literal">remove</tt>, <tt class="docutils literal">rmdir</tt>). <tt class="docutils literal">exc_info</tt> is the exception
+info as it is gotten from <tt class="docutils literal">sys.exc_info</tt>.</p>
+<p>The code of <tt class="docutils literal">rmtree</tt> is taken from Python's <tt class="docutils literal">shutil</tt> module
+and adapted for <tt class="docutils literal">ftputil</tt>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="removing-files-and-links">
+<h3><a class="toc-backref" href="#id21">Removing files and links</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">remove(path)</tt></p>
+<p>removes a file or link on the remote host, similar to <tt class="docutils literal">os.remove</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">unlink(path)</tt></p>
+<p>is an alias for <tt class="docutils literal">remove</tt>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="retrieving-information-about-directories-files-and-links">
+<h3><a class="toc-backref" href="#id22">Retrieving information about directories, files and links</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">listdir(path)</tt></p>
+<p>returns a list containing the names of the files and directories
+in the given path, similar to <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html#os.listdir">os.listdir</a>. The special names
+<tt class="docutils literal">.</tt> and <tt class="docutils literal">..</tt> are not in the list.</p>
+</li>
+</ul>
+<p>The methods <tt class="docutils literal">lstat</tt> and <tt class="docutils literal">stat</tt> (and some others) rely on the
+directory listing format used by the FTP server. When connecting to a
+host, <tt class="docutils literal">FTPHost</tt>'s constructor tries to guess the right format, which
+succeeds in most cases. However, if you get strange results or
+<tt class="docutils literal">ParserError</tt> exceptions by a mere <tt class="docutils literal">lstat</tt> call, please <a class="reference external" href="http://ftputil.sschwarzer.net/issuetrackernotes">file a
+bug report</a>.</p>
+<p>If <tt class="docutils literal">lstat</tt> or <tt class="docutils literal">stat</tt> give wrong modification dates or times, look
+at the methods that deal with time zone differences (<a class="reference internal" href="#time-zone-correction">time zone
+correction</a>).</p>
+<ul id="ftphost-lstat">
+<li><p class="first"><tt class="docutils literal">lstat(path)</tt></p>
+<p>returns an object similar to that from <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html#os.lstat">os.lstat</a>. This is a
+&quot;tuple&quot; with additional attributes; see the documentation of the
+<tt class="docutils literal">os</tt> module for details.</p>
+<p>The result is derived by parsing the output of a <tt class="docutils literal">LIST</tt> command on
+the server. Therefore, the result from <tt class="docutils literal">FTPHost.lstat</tt> can not
+contain more information than the received text. In particular:</p>
+<ul>
+<li><p class="first">User and group ids can only be determined as strings, not as
+numbers, and that only if the server supplies them. This is
+usually the case with Unix servers but maybe not for other FTP
+server programs.</p>
+</li>
+<li><p class="first">Values for the time of the last modification may be rough,
+depending on the information from the server. For timestamps
+older than a year, this usually means that the precision of the
+modification timestamp value is not better than days. For newer
+files, the information may be accurate to a minute.</p>
+</li>
+<li><p class="first">Links can only be recognized on servers that provide this
+information in the <tt class="docutils literal">LIST</tt> output.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Stat attributes that can't be determined at all are set to</dt>
+<dd><p class="first last"><tt class="docutils literal">None</tt>. For example, a line of a directory listing may not
+contain the date/time of a directory's last modification.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">There's a special problem with stat'ing the root directory.
+(Stat'ing things <em>in</em> the root directory is fine though.) In
+this case, a <tt class="docutils literal">RootDirError</tt> is raised. This has to do with the
+algorithm used by <tt class="docutils literal">(l)stat</tt>, and I know of no approach which
+mends this problem.</p>
+</li>
+</ul>
+<p>Currently, <tt class="docutils literal">ftputil</tt> recognizes the common Unix-style and
+Microsoft/DOS-style directory formats. If you need to parse output
+from another server type, please write to the <a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">ftputil mailing
+list</a>. You may consider <a class="reference internal" href="#writing-directory-parsers">writing your own parser</a>.</p>
+</li>
+</ul>
+<ul id="ftphost-stat">
+<li><p class="first"><tt class="docutils literal">stat(path)</tt></p>
+<p>returns <tt class="docutils literal">stat</tt> information also for files which are pointed to by a
+link. This method follows multiple links until a regular file or
+directory is found. If an infinite link chain is encountered or the
+target of the last link in the chain doesn't exist, a
+<tt class="docutils literal">PermanentError</tt> is raised.</p>
+<p>The limitations of the <tt class="docutils literal">lstat</tt> method also apply to <tt class="docutils literal">stat</tt>.</p>
+</li>
+</ul>
+<p id="ftphost-path"><tt class="docutils literal">FTPHost</tt> objects contain an attribute named <tt class="docutils literal">path</tt>, similar to
+<a class="reference external" href="http://www.python.org/doc/current/lib/module-os.path.html">os.path</a>. The following methods can be applied to the remote host
+with the same semantics as for <tt class="docutils literal">os.path</tt>:</p>
+<pre class="literal-block">
+abspath(path)
+basename(path)
+commonprefix(path_list)
+dirname(path)
+exists(path)
+getmtime(path)
+getsize(path)
+isabs(path)
+isdir(path)
+isfile(path)
+islink(path)
+join(path1, path2, ...)
+normcase(path)
+normpath(path)
+split(path)
+splitdrive(path)
+splitext(path)
+walk(path, func, arg)
+</pre>
+<p>Like Python's counterparts under <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.path.html">os.path</a>, <tt class="docutils literal">ftputil</tt>'s <tt class="docutils literal"><span class="pre">is...</span></tt>
+methods return <tt class="docutils literal">False</tt> if they can't find the path given by their
+argument.</p>
+</div>
+<div class="section" id="local-caching-of-file-system-information">
+<h3><a class="toc-backref" href="#id23">Local caching of file system information</a></h3>
+<p>Many of the above methods need access to the remote file system to
+obtain data on directories and files. To get the most recent data,
+<em>each</em> call to <tt class="docutils literal">lstat</tt>, <tt class="docutils literal">stat</tt>, <tt class="docutils literal">exists</tt>, <tt class="docutils literal">getmtime</tt> etc.
+would require to fetch a directory listing from the server, which can
+make the program <em>very</em> slow. This effect is more pronounced for
+operations which mostly scan the file system rather than transferring
+file data.</p>
+<p>For this reason, <tt class="docutils literal">ftputil</tt> by default saves the results from
+directory listings locally and reuses those results. This reduces
+network accesses and so speeds up the software a lot. However, since
+data is more rarely fetched from the server, the risk of obsolete data
+also increases. This will be discussed below.</p>
+<p>Caching can be controlled -- if necessary at all -- via the
+<tt class="docutils literal">stat_cache</tt> object in an <tt class="docutils literal">FTPHost</tt>'s namespace. For example,
+after calling</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(host, user, password)
+</pre>
+<p>the cache can be accessed as <tt class="docutils literal">host.stat_cache</tt>.</p>
+<p>While <tt class="docutils literal">ftputil</tt> usually manages the cache quite well, there are two
+possible reasons for modifying cache parameters.</p>
+<p>The first is when the number of possible entries is too low. You may
+notice that when you are processing very large directories and the
+program becomes much slower than before. It's common for code to read
+a directory with <tt class="docutils literal">listdir</tt> and then process the found directories
+and files. This can also happen implicitly by a call to
+<tt class="docutils literal">FTPHost.walk</tt>. Since version 2.6 <tt class="docutils literal">ftputil</tt> automatically
+increases the cache size if directories with more entries than the
+current maximum cache size are to be scanned. Most of the time, this
+works fine.</p>
+<p>However, if you need access to stat data for several directories at
+the same time, you may need to increase the cache explicitly. This is
+done by the <tt class="docutils literal">resize</tt> method:</p>
+<pre class="literal-block">
+host.stat_cache.resize(20000)
+</pre>
+<p>where the argument is the maximum number of <tt class="docutils literal">lstat</tt> results to store
+(the default is 5000, in versions before 2.6 it was 1000). Note that
+each path on the server, e. g. &quot;/home/schwa/some_dir&quot;, corresponds to
+a single cache entry. Methods like <tt class="docutils literal">exists</tt> or <tt class="docutils literal">getmtime</tt> all
+derive their results from a previously fetched <tt class="docutils literal">lstat</tt> result.</p>
+<p>The value 5000 above means that the cache will hold <em>at most</em> 5000
+entries (unless increased automatically by an explicit or implicit
+<tt class="docutils literal">listdir</tt> call, see above). If more are about to be stored, the
+entries which haven't been used for the longest time will be deleted
+to make place for newer entries.</p>
+<p>The second possible reason to change the cache parameters is to avoid
+stale cache data. Caching is so effective because it reduces network
+accesses. This can also be a disadvantage if the file system data on
+the remote server changes after a stat result has been retrieved; the
+client, when looking at the cached stat data, will use obsolete
+information.</p>
+<p>There are two potential ways to get such out-of-date stat data. The
+first happens when an <tt class="docutils literal">FTPHost</tt> instance modifies a file path for
+which it has a cache entry, e. g. by calling <tt class="docutils literal">remove</tt> or <tt class="docutils literal">rmdir</tt>.
+Such changes are handled transparently; the path will be deleted from
+the cache. A different matter are changes unknown to the <tt class="docutils literal">FTPHost</tt>
+object which inspects its cache. Obviously, for example, these are
+changes by programs running on the remote host. On the other hand,
+cache inconsistencies can also occur if two <tt class="docutils literal">FTPHost</tt> objects change
+a file system simultaneously:</p>
+<pre class="literal-block">
+with (
+  ftputil.FTPHost(server, user1, password1) as host1,
+  ftputil.FTPHost(server, user1, password1) as host2
+):
+    stat_result1 = host1.stat(&quot;some_file&quot;)
+    stat_result2 = host2.stat(&quot;some_file&quot;)
+    host2.remove(&quot;some_file&quot;)
+    # `host1` will still see the obsolete cache entry!
+    print host1.stat(&quot;some_file&quot;)
+    # Will raise an exception since an `FTPHost` object
+    # knows of its own changes.
+    print host2.stat(&quot;some_file&quot;)
+</pre>
+<p>At first sight, it may appear to be a good idea to have a shared cache
+among several <tt class="docutils literal">FTPHost</tt> objects. After some thinking, this turns out
+to be very error-prone. For example, it won't help with different
+processes using <tt class="docutils literal">ftputil</tt>. So, if you have to deal with concurrent
+write/read accesses to a server, you have to handle them explicitly.</p>
+<p>The most useful tool for this is the <tt class="docutils literal">invalidate</tt> method. In the
+example above, it could be used like this:</p>
+<pre class="literal-block">
+with (
+  ftputil.FTPHost(server, user1, password1) as host1,
+  ftputil.FTPHost(server, user1, password1) as host2
+):
+    stat_result1 = host1.stat(&quot;some_file&quot;)
+    stat_result2 = host2.stat(&quot;some_file&quot;)
+    host2.remove(&quot;some_file&quot;)
+    # Invalidate using an absolute path.
+    absolute_path = host1.path.abspath(
+                      host1.path.join(host1.getcwd(), &quot;some_file&quot;))
+    host1.stat_cache.invalidate(absolute_path)
+    # Will now raise an exception as it should.
+    print host1.stat(&quot;some_file&quot;)
+    # Would raise an exception since an `FTPHost` object
+    # knows of its own changes, even without `invalidate`.
+    print host2.stat(&quot;some_file&quot;)
+</pre>
+<p>The method <tt class="docutils literal">invalidate</tt> can be used on any <em>absolute</em> path, be it a
+directory, a file or a link.</p>
+<p>By default, the cache entries (if not replaced by newer ones) are
+stored for an infinite time. That is, if you start your Python process
+using <tt class="docutils literal">ftputil</tt> and let it run for three days a stat call may still
+access cache data that old. To avoid this, you can set the <tt class="docutils literal">max_age</tt>
+attribute:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(server, user, password)
+host.stat_cache.max_age = 60 * 60  # = 3600 seconds
+</pre>
+<p>This sets the maximum age of entries in the cache to an hour. This
+means any entry older won't be retrieved from the cache but its data
+instead fetched again from the remote host and then again stored for
+up to an hour. To reset <cite>max_age</cite> to the default of unlimited age,
+i. e. cache entries never expire, use <tt class="docutils literal">None</tt> as value.</p>
+<p>If you are certain that the cache will be in the way, you can disable
+and later re-enable it completely with <tt class="docutils literal">disable</tt> and <tt class="docutils literal">enable</tt>:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(server, user, password)
+host.stat_cache.disable()
+...
+host.stat_cache.enable()
+</pre>
+<p>During that time, the cache won't be used; all data will be fetched
+from the network. After enabling the cache, its entries will be the
+same as when the cache was disabled, that is, entries won't get
+updated with newer data during this period. Note that even when the
+cache is disabled, the file system data in the code can become
+inconsistent:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(server, user, password)
+host.stat_cache.disable()
+if host.path.exists(&quot;some_file&quot;):
+    mtime = host.path.getmtime(&quot;some_file&quot;)
+</pre>
+<p>In that case, the file <tt class="docutils literal">some_file</tt> may have been removed by another
+process between the calls to <tt class="docutils literal">exists</tt> and <tt class="docutils literal">getmtime</tt>!</p>
+</div>
+<div class="section" id="iteration-over-directories">
+<h3><a class="toc-backref" href="#id24">Iteration over directories</a></h3>
+<ul id="ftphost-walk">
+<li><p class="first"><tt class="docutils literal">walk(top, topdown=True, onerror=None)</tt></p>
+<p>iterates over a directory tree, similar to <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html#os.walk">os.walk</a>. Actually,
+<tt class="docutils literal">FTPHost.walk</tt> uses the code from Python with just the necessary
+modifications, so see the linked documentation.</p>
+</li>
+</ul>
+<ul id="ftphost-path-walk">
+<li><p class="first"><tt class="docutils literal">path.walk(path, func, arg)</tt></p>
+<p>Similar to <tt class="docutils literal">os.path.walk</tt>, the <tt class="docutils literal">walk</tt> method in
+<a class="reference internal" href="#ftphost-path">FTPHost.path</a> can be used, though <tt class="docutils literal">FTPHost.walk</tt> is probably
+easier to use.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="other-methods">
+<h3><a class="toc-backref" href="#id25">Other methods</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">close()</tt></p>
+<p>closes the connection to the remote host. After this, no more
+interaction with the FTP server is possible with this <tt class="docutils literal">FTPHost</tt>
+object.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">rename(source, target)</tt></p>
+<p>renames the source file (or directory) on the FTP server.</p>
+</li>
+</ul>
+<ul id="ftphost-chmod">
+<li><p class="first"><tt class="docutils literal">chmod(path, mode)</tt></p>
+<p>sets the access mode (permission flags) for the given path. The mode
+is an integer as returned for the mode by the <tt class="docutils literal">stat</tt> and <tt class="docutils literal">lstat</tt>
+methods. Be careful: Usually, mode values are written as octal
+numbers, for example 0755 to make a directory readable and writable
+for the owner, but not writable for the group and others. If you
+want to use such octal values, rely on Python's support for them:</p>
+<pre class="literal-block">
+host.chmod(&quot;some_directory&quot;, 0o755)
+</pre>
+<p>Not all FTP servers support the <tt class="docutils literal">chmod</tt> command. In case of
+an exception, how do you know if the path doesn't exist or if
+the command itself is invalid? If the FTP server complies with
+<a class="reference external" href="http://www.ietf.org/rfc/rfc959.txt">RFC 959</a>, it should return a status code 502 if the <tt class="docutils literal">SITE CHMOD</tt>
+command isn't allowed. <tt class="docutils literal">ftputil</tt> maps this special error
+response to a <tt class="docutils literal">CommandNotImplementedError</tt> which is derived from
+<tt class="docutils literal">PermanentError</tt>.</p>
+<p>So you need to code like this:</p>
+<pre class="literal-block">
+host = ftputil.FTPHost(server, user, password)
+try:
+    host.chmod(&quot;some_file&quot;, 0o644)
+except ftputil.error.CommandNotImplementedError:
+    # `chmod` not supported
+    ...
+except ftputil.error.PermanentError:
+    # Possibly a non-existent file
+    ...
+</pre>
+<p>Because the <tt class="docutils literal">CommandNotImplementedError</tt> is more specific, you
+have to test for it first.</p>
+</li>
+</ul>
+<ul>
+<li><p class="first"><tt class="docutils literal">copyfileobj(source, target, length=64*1024)</tt></p>
+<p>copies the contents from the file-like object <tt class="docutils literal">source</tt> to the
+file-like object <tt class="docutils literal">target</tt>. The only difference to
+<tt class="docutils literal">shutil.copyfileobj</tt> is the default buffer size. Note that
+arbitrary file-like objects can be used as arguments (e. g. local
+files, remote FTP files).</p>
+<p>However, the interfaces of <tt class="docutils literal">source</tt> and <tt class="docutils literal">target</tt> have to match;
+the string type read from <tt class="docutils literal">source</tt> must be an accepted string type
+when written to <tt class="docutils literal">target</tt>. For example, if you open <tt class="docutils literal">source</tt> in
+Python 3 as a local text file and <tt class="docutils literal">target</tt> as a remote file object
+in binary mode, the transfer will fail since <tt class="docutils literal">source.read</tt> gives
+unicode strings whereas <tt class="docutils literal">target.write</tt> only accepts byte strings.</p>
+<p>See <a class="reference internal" href="#file-like-objects">File-like objects</a> for the construction and use of remote
+file-like objects.</p>
+</li>
+</ul>
+<ul id="set-parser">
+<li><p class="first"><tt class="docutils literal">set_parser(parser)</tt></p>
+<p>sets a custom parser for FTP directories. Note that you have to pass
+in a parser <em>instance</em>, not the class.</p>
+<p>An <a class="reference internal" href="#writing-directory-parsers">extra section</a> shows how to write own parsers if the default
+parsers in <tt class="docutils literal">ftputil</tt> don't work for you.</p>
+</li>
+</ul>
+<ul id="keep-alive">
+<li><p class="first"><tt class="docutils literal">keep_alive()</tt></p>
+<p>attempts to keep the connection to the remote server active in order
+to prevent timeouts from happening. This method is primarily
+intended to keep the underlying FTP connection of an <tt class="docutils literal">FTPHost</tt>
+object alive while a file is uploaded or downloaded. This will
+require either an extra thread while the upload or download is in
+progress or calling <tt class="docutils literal">keep_alive</tt> from a <a class="reference internal" href="#callback-function">callback function</a>.</p>
+<p>The <tt class="docutils literal">keep_alive</tt> method won't help if the connection has already
+timed out. In this case, a <tt class="docutils literal">ftputil.error.TemporaryError</tt> is raised.</p>
+<p>If you want to use this method, keep in mind that FTP servers define
+a timeout for a reason. A timeout prevents running out of server
+connections because of clients that never disconnect on their own.</p>
+<p>Note that the <tt class="docutils literal">keep_alive</tt> method does <em>not</em> affect the &quot;hidden&quot;
+FTP connections established by <tt class="docutils literal">FTPHost.open</tt> (see below). You
+<em>can't</em> use <tt class="docutils literal">keep_alive</tt> to avoid a timeout in a stalling transfer
+like this:</p>
+<pre class="literal-block">
+with ftputil.FTPHost(server, userid, password) as host:
+    fobj = host.open(&quot;some_remote_file&quot;, &quot;rb&quot;)
+    data = fobj.read(100)
+    # _Futile_ attempt to avoid file connection timeout.
+    for i in xrange(15):
+        time.sleep(60)
+        host.keep_alive()
+    # Will raise an `ftputil.error.TemporaryError`.
+    data += fobj.read()
+</pre>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="file-like-objects">
+<h1><a class="toc-backref" href="#id26">File-like objects</a></h1>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id27">Construction</a></h2>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id28">Basics</a></h3>
+<p><tt class="docutils literal">FTPFile</tt> objects are returned by a call to <tt class="docutils literal">FTPHost.open</tt>;
+never use the constructor directly.</p>
+<p>The API of remote file-like objects are is modeled after the API of
+the <a class="reference external" href="http://docs.python.org/library/io.html">io</a> module in Python 3, which has also been backported to Python
+2.6 and 2.7.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal">FTPHost.open(path, <span class="pre">mode=&quot;r&quot;,</span> buffering=None, encoding=None,
+errors=None, newline=None)</tt></p>
+<p>returns a file-like object that refers to the path on the remote
+host. This path may be absolute or relative to the current directory
+on the remote host (this directory can be determined with the
+<tt class="docutils literal">getcwd</tt> method). As with local file objects, the default mode is
+&quot;r&quot;, i. e. reading text files. Valid modes are &quot;r&quot;, &quot;rb&quot;, &quot;w&quot;, and
+&quot;wb&quot;.</p>
+<p>If a file is opened in binary mode, you <em>must not</em> specify an
+encoding. On the other hand, if you open a file in text mode, an
+encoding is used. By default, this is the return value of
+<tt class="docutils literal">locale.getpreferredencoding</tt>, but you can (and probably should)
+specify a distinct encoding.</p>
+<p>If you open a file in binary mode, the read and write operations use
+byte strings (<tt class="docutils literal">str</tt> in Python 2, <tt class="docutils literal">bytes</tt> in Python 3). That is,
+read operations return byte strings and write operations only accept
+byte strings.</p>
+<p>Similarly, text files always work with unicode strings (<tt class="docutils literal">unicode</tt>
+in Python 2, <tt class="docutils literal">str</tt> in Python 3). Here, read operations return
+unicode strings and write operations only accept unicode strings.</p>
+<p>The arguments <tt class="docutils literal">errors</tt> and <tt class="docutils literal">newline</tt> have the same semantics as
+in <a class="reference external" href="http://docs.python.org/library/io.html#io.open">io.open</a>. The argument <tt class="docutils literal">buffering</tt> currently is ignored.
+It's only there for compatibility with the <tt class="docutils literal">io.open</tt> interface.</p>
+</li>
+</ul>
+<p>Note that the semantics of &quot;text mode&quot; has changed fundamentally from
+ftputil 2.8 and earlier. Previously, &quot;text mode&quot; implied converting
+newline characters to <tt class="docutils literal">\r\n</tt> when writing remote files and
+converting newlines to <tt class="docutils literal">\n</tt> when reading remote files. This is
+in line with the &quot;text mode&quot; notion of FTP command line clients.
+Now, &quot;text mode&quot; follows the semantics in Python's <tt class="docutils literal">io</tt> module.</p>
+</div>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id29">Support for the <tt class="docutils literal">with</tt> statement</a></h3>
+<p><tt class="docutils literal">FTPFile</tt> objects can be used with the <tt class="docutils literal">with</tt> statement:</p>
+<pre class="literal-block">
+import ftputil
+
+# Get an ``FTPHost`` object.
+...
+
+with host.open(&quot;new_file&quot;, &quot;w&quot;) as fobj:
+    fobj.write(&quot;This is some text.&quot;)
+</pre>
+<p>At the end of the <tt class="docutils literal">with</tt> block, the file will be closed
+automatically.</p>
+<p>If something goes wrong during the construction of the file or in the
+body of the <tt class="docutils literal">with</tt> statement, the file will be closed as well.
+Exceptions will be propagated as with <tt class="docutils literal">try ... finally</tt>.</p>
+</div>
+</div>
+<div class="section" id="attributes-and-methods">
+<h2><a class="toc-backref" href="#id30">Attributes and methods</a></h2>
+<p>The methods</p>
+<pre class="literal-block">
+close()
+read([count])
+readline([count])
+readlines()
+write(data)
+writelines(string_sequence)
+</pre>
+<p>and the attribute <tt class="docutils literal">closed</tt> have the same semantics as for file
+objects of a local disk file system. The iterator protocol is
+supported as well, i. e. you can use a loop to read a file line by
+line:</p>
+<pre class="literal-block">
+with ftputil.FTPHost(...) as host:
+    with host.open(&quot;some_file&quot;) as input_file:
+        for line in input_file:
+            # Do something with the line, e. g.
+            print line.strip().replace(&quot;ftplib&quot;, &quot;ftputil&quot;)
+</pre>
+<p>For more on file objects, see the section <a class="reference external" href="http://www.python.org/doc/current/lib/bltin-file-objects.html">File objects</a> in the
+Python Library Reference.</p>
+</div>
+</div>
+<div class="section" id="writing-directory-parsers">
+<h1><a class="toc-backref" href="#id31">Writing directory parsers</a></h1>
+<p><tt class="docutils literal">ftputil</tt> recognizes the two most widely-used FTP directory formats,
+Unix and MS style, and adjusts itself automatically. Almost every FTP
+server uses one of these formats.</p>
+<p>However, if your server uses a format which is different from the two
+provided by <tt class="docutils literal">ftputil</tt>, you can plug in a custom parser with a single
+method call and have <tt class="docutils literal">ftputil</tt> use this parser.</p>
+<p>For this, you need to write a parser class by inheriting from the
+class <tt class="docutils literal">Parser</tt> in the <tt class="docutils literal">ftputil.stat</tt> module. Here's an example:</p>
+<pre class="literal-block">
+import ftputil.error
+import ftputil.stat
+
+class XyzParser(ftputil.stat.Parser):
+    &quot;&quot;&quot;
+    Parse the default format of the FTP server of the XYZ
+    corporation.
+    &quot;&quot;&quot;
+
+    def parse_line(self, line, time_shift=0.0):
+        &quot;&quot;&quot;
+        Parse a `line` from the directory listing and return a
+        corresponding `StatResult` object. If the line can't
+        be parsed, raise `ftputil.error.ParserError`.
+
+        The `time_shift` argument can be used to fine-tune the
+        parsing of dates and times. See the class
+        `ftputil.stat.UnixParser` for an example.
+        &quot;&quot;&quot;
+        # Split the `line` argument and examine it further; if
+        # something goes wrong, raise an `ftputil.error.ParserError`.
+        ...
+        # Make a `StatResult` object from the parts above.
+        stat_result = ftputil.stat.StatResult(...)
+        # `_st_name`, `_st_target` and `_st_mtime_precision` are optional.
+        stat_result._st_name = ...
+        stat_result._st_target = ...
+        stat_result._st_mtime_precision = ...
+        return stat_result
+
+    # Define `ignores_line` only if the default in the base class
+    # doesn't do enough!
+    def ignores_line(self, line):
+        &quot;&quot;&quot;
+        Return a true value if the line should be ignored. For
+        example, the implementation in the base class handles
+        lines like &quot;total 17&quot;. On the other hand, if the line
+        should be used for stat'ing, return a false value.
+        &quot;&quot;&quot;
+        is_total_line = super(XyzParser, self).ignores_line(line)
+        my_test = ...
+        return is_total_line or my_test
+</pre>
+<p>A <tt class="docutils literal">StatResult</tt> object is similar to the value returned by
+<a class="reference external" href="http://www.python.org/doc/current/lib/module-os.html#os.stat">os.stat</a> and is usually built with statements like</p>
+<pre class="literal-block">
+stat_result = StatResult(
+                (st_mode, st_ino, st_dev, st_nlink, st_uid,
+                 st_gid, st_size, st_atime, st_mtime, st_ctime))
+stat_result._st_name = ...
+stat_result._st_target = ...
+stat_result._st_mtime_precision = ...
+</pre>
+<p>with the arguments of the <tt class="docutils literal">StatResult</tt> constructor described in
+the following table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="20%" />
+<col width="13%" />
+<col width="20%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Index</th>
+<th class="head">Attribute</th>
+<th class="head">os.stat type</th>
+<th class="head"><tt class="docutils literal">StatResult</tt> type</th>
+<th class="head">Notes</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>0</td>
+<td>st_mode</td>
+<td>int</td>
+<td>int</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>1</td>
+<td>st_ino</td>
+<td>long</td>
+<td>long</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>2</td>
+<td>st_dev</td>
+<td>long</td>
+<td>long</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>3</td>
+<td>st_nlink</td>
+<td>int</td>
+<td>int</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>4</td>
+<td>st_uid</td>
+<td>int</td>
+<td>str</td>
+<td>usually only available as string</td>
+</tr>
+<tr><td>5</td>
+<td>st_gid</td>
+<td>int</td>
+<td>str</td>
+<td>usually only available as string</td>
+</tr>
+<tr><td>6</td>
+<td>st_size</td>
+<td>long</td>
+<td>long</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>7</td>
+<td>st_atime</td>
+<td>int/float</td>
+<td>float</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>8</td>
+<td>st_mtime</td>
+<td>int/float</td>
+<td>float</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>9</td>
+<td>st_ctime</td>
+<td>int/float</td>
+<td>float</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td>-</td>
+<td>_st_name</td>
+<td>-</td>
+<td>str</td>
+<td>file name without directory part</td>
+</tr>
+<tr><td>-</td>
+<td>_st_target</td>
+<td>-</td>
+<td>str</td>
+<td>link target (may be absolute or relative)</td>
+</tr>
+<tr><td>-</td>
+<td>_st_mtime_precision</td>
+<td>-</td>
+<td>int</td>
+<td><tt class="docutils literal">st_mtime</tt> precision in seconds</td>
+</tr>
+</tbody>
+</table>
+<p>If you can't extract all the desirable data from a line (for
+example, the MS format doesn't contain any information about the
+owner of a file), set the corresponding values in the <tt class="docutils literal">StatResult</tt>
+instance to <tt class="docutils literal">None</tt>.</p>
+<p>Parser classes can use several helper methods which are defined in
+the class <tt class="docutils literal">Parser</tt>:</p>
+<ul class="simple">
+<li><tt class="docutils literal">parse_unix_mode</tt> parses strings like &quot;drwxr-xr-x&quot; and returns
+an appropriate <tt class="docutils literal">st_mode</tt> integer value.</li>
+<li><tt class="docutils literal">parse_unix_time</tt> returns a float number usable for the
+<tt class="docutils literal"><span class="pre">st_...time</span></tt> values by parsing arguments like &quot;Nov&quot;/&quot;23&quot;/&quot;02:33&quot; or
+&quot;May&quot;/&quot;26&quot;/&quot;2005&quot;. Note that the method expects the timestamp string
+already split at whitespace.</li>
+<li><tt class="docutils literal">parse_ms_time</tt> parses arguments like &quot;10-23-01&quot;/&quot;03:25PM&quot; and
+returns a float number like from <tt class="docutils literal">time.mktime</tt>. Note that the
+method expects the timestamp string already split at whitespace.</li>
+</ul>
+<p>Additionally, there's an attribute <tt class="docutils literal">_month_numbers</tt> which maps
+lowercase three-letter month abbreviations to integers.</p>
+<p>For more details, see the two &quot;standard&quot; parsers <tt class="docutils literal">UnixParser</tt> and
+<tt class="docutils literal">MSParser</tt> in the module <tt class="docutils literal">ftputil/stat.py</tt>.</p>
+<p>To actually <em>use</em> the parser, call the method <a class="reference internal" href="#set-parser">set_parser</a> of the
+<tt class="docutils literal">FTPHost</tt> instance.</p>
+<p>If you can't write a parser or don't want to, please ask on the
+<a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">ftputil mailing list</a>. Possibly someone has already written a parser
+for your server or can help with it.</p>
+</div>
+<div class="section" id="faq-tips-and-tricks">
+<h1><a class="toc-backref" href="#id32">FAQ / Tips and tricks</a></h1>
+<div class="section" id="where-can-i-get-the-latest-version">
+<h2><a class="toc-backref" href="#id33">Where can I get the latest version?</a></h2>
+<p>See the <a class="reference external" href="http://ftputil.sschwarzer.net/download">download page</a>. Announcements will be sent to the <a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">mailing
+list</a>. Announcements on major updates will also be posted to the
+newsgroup <a class="reference external" href="news:comp.lang.python.announce">comp.lang.python.announce</a> .</p>
+</div>
+<div class="section" id="is-there-a-mailing-list-on-ftputil">
+<h2><a class="toc-backref" href="#id34">Is there a mailing list on <tt class="docutils literal">ftputil</tt>?</a></h2>
+<p>Yes, please visit <a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">http://ftputil.sschwarzer.net/mailinglist</a> to
+subscribe or read the archives.</p>
+<p>Though you can <em>technically</em> post without subscribing first I can't
+recommend it: The mails from non-subscribers have to be approved by
+me and because the arriving mails contain <em>lots</em> of spam, I rarely go
+through these mails.</p>
+</div>
+<div class="section" id="i-found-a-bug-what-now">
+<h2><a class="toc-backref" href="#id35">I found a bug! What now?</a></h2>
+<p>Before reporting a bug, make sure that you already read this manual
+and tried the <a class="reference external" href="http://ftputil.sschwarzer.net/download">latest version</a> of <tt class="docutils literal">ftputil</tt>. There the bug might
+have already been fixed.</p>
+<p>Please see <a class="reference external" href="http://ftputil.sschwarzer.net/issuetrackernotes">http://ftputil.sschwarzer.net/issuetrackernotes</a> for
+guidelines on entering a bug in <tt class="docutils literal">ftputil</tt>'s ticket system. If you
+are unsure if the behaviour you found is a bug or not, you should write
+to the <a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">ftputil mailing list</a>. In <em>either</em> case you <em>must not</em>
+include confidential information (user id, password, file names, etc.)
+in the problem report! Be careful!</p>
+</div>
+<div class="section" id="does-ftputil-support-ssl">
+<h2><a class="toc-backref" href="#id36">Does <tt class="docutils literal">ftputil</tt> support SSL?</a></h2>
+<p><tt class="docutils literal">ftputil</tt> has no <em>built-in</em> SSL support. On the other hand,
+you can use <a class="reference external" href="http://wiki.osafoundation.org/bin/view/Projects/MeTooCrypto#Downloads">M2Crypto</a> (in the source code archive, look for the
+file <tt class="docutils literal">M2Crypto/ftpslib.py</tt>) which has a class derived from
+<tt class="docutils literal">ftplib.FTP</tt> that supports SSL. You then can use a class
+(not an object of it) similar to the following as a &quot;session
+factory&quot; in <tt class="docutils literal">ftputil.FTPHost</tt>'s constructor:</p>
+<pre class="literal-block">
+import ftputil
+
+from M2Crypto import ftpslib
+
+class SSLFTPSession(ftpslib.FTP_TLS):
+
+    def __init__(self, host, userid, password):
+        &quot;&quot;&quot;
+        Use M2Crypto's `FTP_TLS` class to establish an
+        SSL connection.
+        &quot;&quot;&quot;
+        ftpslib.FTP_TLS.__init__(self)
+        # Do anything necessary to set up the SSL connection.
+        ...
+        self.connect(host, port)
+        self.login(userid, password)
+        ...
+
+# Note the `session_factory` parameter.
+host = ftputil.FTPHost(host, userid, password,
+                       session_factory=SSLFTPSession)
+# Use `host` as usual.
+</pre>
+<p>If you work with Python 2.7 or 3.2 and later, you can use a
+similar recipe with the class <tt class="docutils literal">FTP_TLS</tt> in the <tt class="docutils literal">ftplib</tt>
+module. Note that you need to call <tt class="docutils literal">prot_p</tt> on the <tt class="docutils literal">FTP_TLS</tt>
+instance to actually use a secure transfer. This makes it still
+necessary to define a session class similar to the one above.</p>
+</div>
+<div class="section" id="how-do-i-connect-to-a-non-default-port">
+<h2><a class="toc-backref" href="#id37">How do I connect to a non-default port?</a></h2>
+<p>By default, an instantiated <tt class="docutils literal">FTPHost</tt> object connects on the usual
+FTP ports. If you have to use a different port, refer to the
+section <a class="reference internal" href="#ftphost-construction">FTPHost construction</a>.</p>
+<p>You can use the same approach to connect in active or passive mode.</p>
+</div>
+<div class="section" id="how-do-i-set-active-or-passive-mode">
+<h2><a class="toc-backref" href="#id38">How do I set active or passive mode?</a></h2>
+<p>See the previous question and answer.</p>
+</div>
+<div class="section" id="how-can-i-debug-an-ftp-connection-problem">
+<h2><a class="toc-backref" href="#id39">How can I debug an FTP connection problem?</a></h2>
+<p>Similarly to the tip above, write a session factory which calls
+<a class="reference external" href="http://docs.python.org/library/ftplib.html#ftplib.FTP.set_debuglevel">ftplib.FTP.set_debuglevel</a> before the actual login.</p>
+<p>If you want to change the debug level only temporarily after the
+connection is established, you can reach the <a class="reference external" href="#session-factories">session object</a> as the
+<tt class="docutils literal">_session</tt> attribute of the <tt class="docutils literal">FTPHost</tt> instance. Note that this
+interface should <em>only</em> be used for debugging. Calling arbitrary
+<tt class="docutils literal">ftplib.FTP</tt> methods on the session object may <em>cause</em> bugs!</p>
+</div>
+<div class="section" id="conditional-upload-download-to-from-a-server-in-a-different-time-zone">
+<h2><a class="toc-backref" href="#id40">Conditional upload/download to/from a server in a different time zone</a></h2>
+<p>You may find that <tt class="docutils literal">ftputil</tt> uploads or downloads files
+unnecessarily, or not when it should. This can happen when the FTP
+server is in a different time zone than the client on which
+<tt class="docutils literal">ftputil</tt> runs. Please see the section on <a class="reference internal" href="#time-zone-correction">time zone correction</a>.
+It may even be sufficient to call <a class="reference internal" href="#synchronize-times">synchronize_times</a>.</p>
+</div>
+<div class="section" id="when-i-use-ftputil-all-i-get-is-a-parsererror-exception">
+<h2><a class="toc-backref" href="#id41">When I use <tt class="docutils literal">ftputil</tt>, all I get is a <tt class="docutils literal">ParserError</tt> exception</a></h2>
+<p>The FTP server you connect to may use a directory format that
+<tt class="docutils literal">ftputil</tt> doesn't understand. You can either write and
+<a class="reference internal" href="#writing-directory-parsers">plug in an own parser</a> or ask on the <a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">mailing list</a> for
+help.</p>
+</div>
+<div class="section" id="isdir-isfile-or-islink-incorrectly-return-false">
+<h2><a class="toc-backref" href="#id42"><tt class="docutils literal">isdir</tt>, <tt class="docutils literal">isfile</tt> or <tt class="docutils literal">islink</tt> incorrectly return <tt class="docutils literal">False</tt></a></h2>
+<p>Like Python's counterparts under <a class="reference external" href="http://www.python.org/doc/current/lib/module-os.path.html">os.path</a>, <tt class="docutils literal">ftputil</tt>'s methods
+return <tt class="docutils literal">False</tt> if they can't find the given path.</p>
+<p>Probably you used <tt class="docutils literal">listdir</tt> on a directory and called <tt class="docutils literal"><span class="pre">is...()</span></tt> on
+the returned names. But if the argument for <tt class="docutils literal">listdir</tt> wasn't the
+current directory, the paths won't be found and so all <tt class="docutils literal"><span class="pre">is...()</span></tt>
+variants will return <tt class="docutils literal">False</tt>.</p>
+</div>
+<div class="section" id="i-don-t-find-an-answer-to-my-problem-in-this-document">
+<h2><a class="toc-backref" href="#id43">I don't find an answer to my problem in this document</a></h2>
+<p>Please send an email with your problem report or question to the
+<a class="reference external" href="http://ftputil.sschwarzer.net/mailinglist">ftputil mailing list</a>, and we'll see what we can do for you. :-)</p>
+</div>
+</div>
+<div class="section" id="bugs-and-limitations">
+<h1><a class="toc-backref" href="#id44">Bugs and limitations</a></h1>
+<ul class="simple">
+<li><tt class="docutils literal">ftputil</tt> needs at least Python 2.6 to work.</li>
+<li>Whether <tt class="docutils literal">ftputil</tt> &quot;sees&quot; &quot;hidden&quot; directory and file names (i. e.
+names starting with a dot) depends on the configuration of the FTP
+server. See <a class="reference internal" href="#hidden-files-and-directories">Hidden files and directories</a> for details.</li>
+<li>Due to the implementation of <tt class="docutils literal">lstat</tt> it can not return a sensible
+value for the root directory <tt class="docutils literal">/</tt> though stat'ing entries <em>in</em> the
+root directory isn't a problem. If you know an implementation that
+can do this, please let me know. The root directory is handled
+appropriately in <tt class="docutils literal">FTPHost.path.exists/isfile/isdir/islink</tt>, though.</li>
+<li>In multithreaded programs, you can have each thread use one or more
+<tt class="docutils literal">FTPHost</tt> instances as long as no instance is shared with other
+threads.</li>
+<li>Currently, it is not possible to continue an interrupted upload or
+download. Contact me if this causes problems for you.</li>
+<li>There's exactly one cache for <tt class="docutils literal">lstat</tt> results for each <tt class="docutils literal">FTPHost</tt>
+object, i. e. there's no sharing of cache results determined by
+several <tt class="docutils literal">FTPHost</tt> objects. See <a class="reference internal" href="#local-caching-of-file-system-information">Local caching of file system
+information</a> for the reasons.</li>
+</ul>
+</div>
+<div class="section" id="files">
+<h1><a class="toc-backref" href="#id45">Files</a></h1>
+<p>If not overwritten via installation options, the <tt class="docutils literal">ftputil</tt> files
+reside in the <tt class="docutils literal">ftputil</tt> package. There's also documentation in
+<a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> and in HTML format. The locations of these
+files after installation is system-dependent.</p>
+<p>The files <tt class="docutils literal"><span class="pre">test_*.py</span></tt> and <tt class="docutils literal">mock_ftplib.py</tt> are for unit-testing.
+If you only <em>use</em> <tt class="docutils literal">ftputil</tt>, i. e. <em>don't</em> modify it, you can
+delete these files.</p>
+</div>
+<div class="section" id="references">
+<h1><a class="toc-backref" href="#id46">References</a></h1>
+<ul class="simple">
+<li>Mackinnon T, Freeman S, Craig P. 2000. <a class="reference external" href="http://www.connextra.com/aboutUs/mockobjects.pdf">Endo-Testing:
+Unit Testing with Mock Objects</a>.</li>
+<li>Postel J, Reynolds J. 1985. <a class="reference external" href="http://www.ietf.org/rfc/rfc959.txt">RFC 959 - File Transfer Protocol (FTP)</a>.</li>
+<li>Van Rossum G et al. 2013. <a class="reference external" href="http://www.python.org/doc/current/lib/lib.html">Python Library Reference</a>.</li>
+</ul>
+</div>
+<div class="section" id="authors">
+<h1><a class="toc-backref" href="#id47">Authors</a></h1>
+<p><tt class="docutils literal">ftputil</tt> is written by Stefan Schwarzer
+&lt;<a class="reference external" href="mailto:sschwarzer&#64;sschwarzer.net">sschwarzer&#64;sschwarzer.net</a>&gt;, in part based on suggestions
+from users.</p>
+<p>The <tt class="docutils literal">lrucache</tt> module is written by Evan Prodromou
+&lt;<a class="reference external" href="mailto:evan&#64;prodromou.name">evan&#64;prodromou.name</a>&gt;.</p>
+<p>Feedback is appreciated. :-)</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+Things to do for a new release:
+
+- Do commits
+
+- Update info on new version in `README.txt`
+
+- Write announcement in announcements.txt
+
+- Increase version number in `VERSION` (`ftputil/version.py`
+  and `ftputil.txt` are handled by the `sed` invocation through
+  `make patch`)
+
+- `make patch && make docs`
+
+- Do outstanding commits due to patching
+
+- Run `tox` for testing
+
+- `make dist`
+
+- Tag release (tags are formed like "release2_0_3b2")
+
+- Push to main and Bitbucket repositories
+
+- Add new version to Trac issue tracker
+
+- Add new version to Download page on the website
+
+- Mark corresponding milestone as completed
+
+- Post announcement to ftputil mailing list (after possibly
+  updating the documentation, see below)
+
+
+Only for non-alpha/beta releases:
+
+  _Before_ sending announcement to mailing list ...
+
+  - Update documentation on the website
+
+  - Register new version with PyPI
+
+- Send announcement to comp.lang.python.announce
+

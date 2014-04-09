@@ -62,4 +62,6 @@ class filesystem(persistent.Persistent):
 
 # unit-testish thing here.
 if __name__ == "__main__":
-    pass
+    settings = imp.load_source('settings','../fs_settings/ftp.py')
+    fs = filesystem('ftp.FreeBSD.org')
+    pdb.set_trace()

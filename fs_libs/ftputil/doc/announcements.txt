@@ -1,0 +1,894 @@
+ftputil 3.0 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.8
+-------------------------
+
+Note: This version of ftputil is _not_ backward-compatible
+with earlier versions.See the links below for information
+on adapting existing client code.
+
+- This version adds Python 3 compatibility! :-)
+
+  The same source is used for Python 2.x and Python 3.x.
+
+  I had to change the API to find a good compromise for
+  both Python versions.
+
+- ftputil now requires at least Python 2.6.
+
+- Remote file-like objects use the same semantics as Python's
+  `io` module. (This is the same as for the built-in `open`
+  function in Python 3.)
+
+- `ftputil.ftp_error` was renamed to `ftputil.error`.
+
+- For custom parsers, import `ftputil.parser` instead of
+  `ftputil.stat`.
+
+For more information please read
+http://ftputil.sschwarzer.net/trac/wiki/Documentation
+http://ftputil.sschwarzer.net/trac/wiki/WhatsNewInFtputil3.0
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://opensource.org/licenses/BSD-3-Clause ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.8 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.7.1
+---------------------------
+
+- After some discussion [1] I decided to remove the auto-probing
+  before using the `-a` option for `LIST` [2] to find "hidden" files
+  and directories. The option is used by default now, without probing
+  for exceptions. If this new approach causes problems, you can use
+
+    ftp_host = ftputil.FTPHost(...)
+    ftp_host.use_list_a_option = False
+
+- Several bugs were fixed. [3]
+
+- The mailing lists have moved to
+
+    ftputil@lists.sschwarzer.net
+    ftputil-tickets@lists.sschwarzer.net
+
+  The ftputil list [4] requires a subscription before you can post.
+  The ftputil-tickets list [5] is read-only anyway.
+
+  Thanks to Codespeak.net for having hosted the lists for almost
+  ten years. :-)
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://opensource.org/licenses/BSD-3-Clause ).
+
+[1] http://ftputil.sschwarzer.net/trac/ticket/65
+[2] http://lists.sschwarzer.net/pipermail/ftputil/2012q3/000350.html
+[3] http://ftputil.sschwarzer.net/trac/ticket/39
+    http://ftputil.sschwarzer.net/trac/ticket/65
+    http://ftputil.sschwarzer.net/trac/ticket/66
+    http://ftputil.sschwarzer.net/trac/ticket/67
+    http://ftputil.sschwarzer.net/trac/ticket/69
+[4] http://lists.sschwarzer.net/listinfo/ftputil
+    http://lists.sschwarzer.net/listinfo/ftputil-tickets
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.7 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.6
+-------------------------
+
+- ftputil now explicitly tries to get hidden directory and file
+  names (names starting with a dot) from the FTP server. [1]
+
+  Before, ftputil used a `LIST` command to get directory listings, now
+  it uses `LIST -a` if the server doesn't explicitly reject its usage
+  upon login. Note that the server is free to ignore the `-a` option,
+  so "hidden" directories and files may still not be visible. Please
+  see [2] for details.
+
+  If you have code that _relies_ on "hidden" directory or file names
+  _not_ being visible, please update the code as necessary. If that's
+  presumably not possible, please send feedback to the mailing list [3]
+  or in private mail [4].
+
+- A bug in the experimental synchronization code was fixed [5]. Thanks
+  to Zhuo Qiang for his help. :-)
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+[1] http://ftputil.sschwarzer.net/trac/ticket/23
+[2] http://ftputil.sschwarzer.net/trac/ticket/23#comment:4
+[3] http://codespeak.net/mailman/listinfo/ftputil
+    (note that you need to subscribe to the list to be able to post there)
+[4] sschwarzer@sschwarzer.net
+[5] http://ftputil.sschwarzer.net/trac/ticket/62
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.6 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.5
+-------------------------
+
+- The stat caching has been improved. There's now an "auto-grow"
+  feature for `FTPHost.listdir` which in turn applies to
+  `FTPHost.walk`. Moreover, there were several performance
+  optimizations.
+
+- A few bugs were fixed [1-3].
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+[1] http://ftputil.sschwarzer.net/trac/ticket/53
+[2] http://ftputil.sschwarzer.net/trac/ticket/55
+[3] http://ftputil.sschwarzer.net/trac/ticket/56
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.5 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.4.2
+---------------------------
+
+- As announced over a year ago [1], the `xreadlines` method for
+  FTP file objects has been removed, and exceptions can no longer be
+  accessed via the `ftputil` namespace. Only use `ftp_error` to access
+  the exceptions.
+
+  The distribution contains a small tool `find_deprecated_code.py` to
+  scan a directory tree for the deprecated uses. Invoke the program
+  with the `--help` option to see a description.
+
+- Upload and download methods now accept a `callback` argument to do
+  things during a transfer. Modification time comparisons in
+  `upload_if_newer` and `download_if_newer` now consider the timestamp
+  precision of the remote file which may lead to some unnecessary
+  transfers. These can be avoided by waiting at least a minute between
+  calls of `upload_if_newer` (or `download_if_newer`) for the same
+  file. See the documentation for details [2].
+
+- The `FTPHost` class got a `keep_alive` method. It should be used
+  carefully though, not routinely. Please read the description [3] in
+  the documentation.
+
+- Several bugs were fixed [4-7].
+
+- The source code was restructured. The tests are now in a `test`
+  subdirectory and are no longer part of the release archive. You can
+  still get them via the source repository. Licensing matters have
+  been moved to a common `LICENSE` file.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+[1] http://codespeak.net/pipermail/ftputil/2009q1/000256.html
+[2] http://ftputil.sschwarzer.net/trac/wiki/Documentation#uploading-and-downloading-files
+[3] http://ftputil.sschwarzer.net/trac/wiki/Documentation#keep-alive
+[4] http://ftputil.sschwarzer.net/trac/ticket/44
+[5] http://ftputil.sschwarzer.net/trac/ticket/46
+[6] http://ftputil.sschwarzer.net/trac/ticket/47
+[7] http://ftputil.sschwarzer.net/trac/ticket/51
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.4.2 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.4.1
+---------------------------
+
+- Some FTP servers seem to have problems using *any* directory
+  argument which contains slashes. The new default for FTP commands
+  now is to change into the directory before actually invoking the
+  command on a relative path (report and fix suggestion by Nicola
+  Murino).
+
+- Calling the method ``FTPHost.stat_cache.resize`` with an argument 0
+  caused an exception. This has been fixed; a zero cache size now
+  of course doesn't cache anything but doesn't lead to a traceback
+  either.
+
+- The installation script ``setup.py`` didn't work with the ``--home``
+  option because it still tried to install the documentation in a
+  system directory (report by Albrecht Mühlenschulte).
+
+  As a side effect, when using the *global* installation, the
+  documentation is no longer installed in the ftputil package
+  directory but in a subdirectory ``doc`` of a directory determined by
+  Distutils. For example, on my system (Ubuntu 9.04) the documentation
+  files are put into ``/usr/local/doc``.
+
+Upgrading is recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.4.1 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.4
+-------------------------
+
+Several bugs were fixed:
+
+- On Windows, some accesses to the stat cache caused it to become
+  inconsistent, which could also trigger exceptions (report and patch
+  by Peter Stirling).
+
+- In ftputil 2.4, the use of ``super`` in the exception base class
+  caused ftputil to fail on Python <2.5 (reported by Nicola Murino).
+  ftputil is supposed to run with Python 2.3+.
+
+- The conversion of 12-hour clock times to 24-hour clock in the MS
+  format parser was wrong for 12 AM and 12 PM.
+
+Upgrading is strongly recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.4 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.3
+-------------------------
+
+The ``FTPHost`` class got a new method ``chmod``, similar to
+``os.chmod``, to act on remote files. Thanks go to Tom Parker for
+the review.
+
+There's a new exception ``CommandNotImplementedError``, derived from
+``PermanentError``, to denote commands not implemented by the FTP
+server or disabled by its administrator.
+
+Using the ``xreadlines`` method of FTP file objects causes a warning
+through Python's warnings framework.
+
+Upgrading is recommended.
+
+Incompatibility notice
+----------------------
+
+The ``xreadlines`` method will be removed in ftputil *2.5* as well as
+the direct access of exception classes via the ftputil module (e. g.
+``ftputil.PermanentError``). However, the deprecated access causes no
+warning because that would be rather difficult to implement.
+
+The distribution contains a small tool find_deprecated_code.py to scan
+a directory tree for the deprecated uses. Invoke the program with the
+``--help`` option to see a description.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.3 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.2.4
+---------------------------
+
+ftputil has got support for the ``with`` statement which was introduced
+by Python 2.5. You can now construct host and remote file objects in
+``with`` statements and have them closed automatically (contributed
+by Roger Demetrescu). See the documentation for examples.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.2.4 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.2.3
+---------------------------
+
+This release fixes a bug in the ``makedirs`` call (report and fix by
+Richard Holden). Upgrading is recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.2.3 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.2.2
+---------------------------
+
+This release fixes a bug in the ``makedirs`` call (report and fix by
+Julian, whose last name I don't know ;-) ). Upgrading is recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.2.2 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.2.1
+---------------------------
+
+This bugfix release handles whitespace in path names more reliably
+(thanks to Johannes Strömberg). Upgrading is recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.2.1 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.2
+-------------------------
+
+This bugfix release checks (and ignores) status code 451 when FTPFiles
+are closed (thanks go to Alexander Holyapin). Upgrading is recommended.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+Read the documentation at
+http://ftputil.sschwarzer.net/trac/wiki/Documentation .
+
+License
+-------
+
+ftputil is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.2 is now available from
+http://ftputil.sschwarzer.net/download .
+
+Changes since version 2.1
+-------------------------
+
+- Results of stat calls (also indirect calls, i. e. listdir,
+  isdir/isfile/islink, exists, getmtime etc.) are now cached and
+  reused. This results in remarkable speedups for many use cases.
+  Thanks to Evan Prodromou for his permission to add his lrucache
+  module under ftputil's license.
+
+- The current directory is also locally cached, resulting in further
+  speedups.
+
+- It's now possible to write and plug in custom parsers for directory
+  formats which ftputil doesn't support natively.
+
+- File-like objects generated via ``FTPHost.file`` now support the
+  iterator protocol (for line in some_file: ...).
+
+- The documentation has been updated accordingly. Read it under
+  http://ftputil.sschwarzer.net/trac/wiki/Documentation .
+
+Possible incompatibilities:
+
+- This release requires at least Python 2.3. (Previous releases
+  worked with Python versions from 2.1 up.)
+
+- The method ``FTPHost.set_directory_format`` has been removed,
+  since the directory format (Unix or MS) is set automatically. (The
+  new method ``set_parser`` is a different animal since it takes
+  a parser object to parse "foreign" formats, not a string.)
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+License
+-------
+
+ftputil 2.2 is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+The second beta version of ftputil 2.2 is available. You can download
+it from http://ftputil.sschwarzer.net/download .
+
+With respect to the first beta release, it's now possible to write
+and plug in custom parsers for FTP directory formats that ftputil
+doesn't know natively. The documentation has been updated accordingly.
+
+The documentation for this release is online at
+http://ftputil.sschwarzer.net/trac/wiki/Documentation#Documentationforftputil2.2b2 ,
+so you can read about the extensions in more detail.
+
+Please download and test the release. Do you miss something which
+should be in this release? Are there any bugs?
+
+Stefan
+
+----------------------------------------------------------------------
+The first beta version of ftputil 2.2 is available. You can download
+it from http://ftputil.sschwarzer.net/download .
+
+With respect to the previous alpha release, the cache now uses the
+lrucache module by Evan Prodromou which is bundled with the ftputil
+distribution. (Evan also gave his permission to include the module
+under ftputil's modified BSD license instead of the Academic License.)
+The documentation for the cache and its control have been added to
+ftputil.txt / ftputil.html .
+
+File objects generated with FTPHost.file now support the iterator
+protocol (for line in some_file: ...).
+
+Please download and test the release. Do you miss something which
+should be in this release? Are there any bugs?
+
+Stefan
+
+----------------------------------------------------------------------
+Welcome to the first alpha release of ftputil 2.2, ftputil 2.2a1.
+Please download it from http://ftputil.sschwarzer.net/download .
+
+This version adds caching of stat results to ftputil. This also
+affects indirect calls via FTPHost.path, e. g. methods isfile,
+exists, getmtime, getsize. The test script at
+http://ftputil.sschwarzer.net/trac/browser/tags/release2_2a1/sandbox/list_dir_test.py
+runs about 20 times as fast as before adding caching! :-)
+
+As the "alpha" part implies, this release is not production-ready,
+it's even kind of experimental: The caching works but there's no
+cache entry expiration yet. (I plan to implement an LRU expiration
+strategy or something similar.) Apart from that, the release is
+tested as any production release. I suggest using the --prefix
+option for installing alpha releases.
+
+That said, it would be helpful if you tested this release and
+report your findings. When testing the code, please make sure
+that your code uses the ftputil version you intend (alpha vs.
+production version), e. g. by setting the PYTHONPATH environment
+variable. I'm very interested in the speedups - and any problems
+you encounter.
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.1.1 is now available from
+http://ftputil.sschwarzer.net/download .
+
+This release fixes a bug which happened when a client opened
+a large file on the server as a file-like object and read
+only a part of it. For details, see
+http://ftputil.sschwarzer.net/trac/ticket/17 .
+
+Stefan
+
+----------------------------------------------------------------------
+Changes since version 2.0
+-------------------------
+
+- Added new methods to the FTPHost class, namely makedirs, walk,
+  rmtree.
+
+- The FTP server directory format ("Unix" vs. "Windows") is now set
+  automatically (thanks to Andrew Ittner for testing it).
+
+- Border cases like inaccessible login directories and whitespace in
+  directory names, are now handled more gracefully (based on input
+  from Valeriy Pogrebitskiy, Tommy Sundström and H. Y. Chu).
+
+- The documentation was updated.
+
+- A Russian translation of the documentation (currently slightly
+  behind) was contributed by Anton Stepanov. It's also on the website
+  at http://ftputil.sschwarzer.net/trac/wiki/RussianDocumentation .
+
+- New website, http://ftputil.sschwarzer.net/ with wiki, issue tracker
+  and Subversion repository (thanks to Trac!)
+
+  Please enter not only bugs but also enhancement request into
+  the issue tracker!
+
+Possible incompatibilities:
+
+- The exception hierarchy was changed slightly, which might break
+  client code. See http://ftputil.sschwarzer.net/trac/changeset/489
+  for the change details and the possibly necessary code changes.
+
+- FTPHost.rmdir no longer removes non-empty directories. Use the new
+  method FTPHost.rmtree for this.
+
+What is ftputil?
+----------------
+
+ftputil is a high-level FTP client library for the Python programming
+language. ftputil implements a virtual file system for accessing FTP
+servers, that is, it can generate file-like objects for remote files.
+The library supports many functions similar to those in the os,
+os.path and shutil modules. ftputil has convenience functions for
+conditional uploads and downloads, and handles FTP clients and servers
+in different timezones.
+
+License
+-------
+
+ftputil 2.1 is Open Source software, released under the revised BSD
+license (see http://www.opensource.org/licenses/bsd-license.php ).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 2.0.3 is now available at
+http://www.sschwarzer.net/python/python_software.html#ftputil .
+
+This release fixes (for most cases) some problems when logging into an
+FTP server with an inaccessible login directory, i. e. `getcwd()`
+returns "/some/login/dir" but `chdir("/some/login/dir")` fails.
+
+Thanks go to Valeriy Pogrebitskiy for investigating and reporting
+these problems.
+
+Stefan
+
+----------------------------------------------------------------------
+Here's ftputil 2.0 !
+
+ftputil is a high-level alternative to Python's ftplib module. With
+ftputil, you can access directories and files on remote FTP servers
+almost as if they were in your local file system. This includes using
+file-like objects representing remote files.
+
+For future releases see
+http://www.sschwarzer.net/python/python_software.html
+or subscribe to the mailing list at
+http://codespeak.net/mailman/listinfo/ftputil
+
+What's new?
+-----------
+
+From version 1.1 to 2.0, the following has changed:
+
+- ftputil has been re-organized and is now a Python package (the
+  import statement is still the same)
+
+- installation via Python distutils
+
+- stat, upload_if_newer, download_if_newer etc. work correctly if the
+  server is in another time zone than the client running ftputil (with
+  help from Andrew Ittner); see section "Time zone correction" in the
+  documentation
+
+- it's possible to set the directory listing format "manually" (though
+  in most cases it's recognized automatically); see section "Stat'ing
+  files and directories"
+
+- added a workaround regarding whitespace in directory names (thanks
+  to Tommy Sundström and H. Y. Chu)
+
+- extended documentation and converted it to HTML format (now
+  generated from reStructured Text)
+
+- several bugfixes
+
+- there's now a mailing list at http://codespeak.net/mailman/listinfo/ftputil
+  (thanks to Holger Krekel)
+
+Documentation
+-------------
+
+The documentation for ftputil can be found in the file ftputil.txt
+(reStructured Text format) or ftputil.html (recommended, generated
+from ftputil.txt).
+
+License
+-------
+
+ftputil is Open Source Software. It is distributed under a BSD-style
+license (see the top of ftputil.py).
+
+Stefan
+
+----------------------------------------------------------------------
+ftputil 1.1 is released. You can find it at
+http://www.ndh.net/home/sschwarzer/python/python_software.html .
+
+ftputil provides a higher-level interface for FTP sessions than the
+ftplib module. FTP servers can be accessed via an interface similar to
+os and os.path. Remote files are accessible as file-like objects.
+
+New since version 1.0:
+
+- ftputil now runs under Python 2.1+ (not only 2.2+).
+- documentation
+- conditional upload/download (depending on local and remote file
+  timestamps)
+- FTPHost.stat follows links
+- a session factory other than the default, ftplib.FTP, can be given
+  in the FTPHost constructor; this allows to use classes derived from
+  ftplib.FTP (like ftpslib.FTP_TLS from the M2Crypto package)
+- several bugfixes (mostly regarding byte count in text mode
+  transfers)
+- unit test
+
+Stefan
+----------------------------------------------------------------------
+Hello Pythoneers :)
+
+I would like to announce ftputil.py, a module which provides a
+more friendly interface for FTP sessions than the ftplib module.
+
+The FTPHost objects generated from it allow many operations similar
+to those of os and os.path. Examples:
+
+  # download some files from the login directory
+  import ftputil
+  host = ftputil.FTPHost('ftp.domain.com', 'user', 'secret')
+  names = host.listdir(host.curdir)
+  for name in names:
+      if host.path.isreg(name):
+          host.download(name, name, 'b')  # remote, local, binary mode
+
+  # make a new directory and copy a remote file into it
+  host.mkdir('newdir')
+  source = host.file('index.html', 'r')  # file-like object
+  target = host.file('newdir/index.html', 'w')  # file-like object
+  host.copyfileobj(source, target)  # mimics shutil.copyfileobj
+  source.close()
+  target.close()
+
+Even host.path.walk works. :-) But slow. ;-)
+
+ftputil.py can be downloaded from
+http://www.ndh.net/home/sschwarzer/download/ftputil.py
+
+I would like to get your suggestions and comments. :-)
+
+Stefan
+
+
+P.S.: Thanks to Pedro Rodriguez for his helpful answer to my question
+in comp.lang.python :-)
+----------------------------------------------------------------------

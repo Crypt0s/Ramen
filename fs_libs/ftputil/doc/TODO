@@ -1,0 +1,25 @@
+Planned:
+
+- Python 3 support (see
+  ftp://ftp.rfc-editor.org/in-notes/rfc2640.txt for some notes on
+  internationalization)
+
+  - `FTPHost.listdir` should return a list of byte strings in Python 2
+    and a list of unicode strings in Python 3.
+
+  - Handle encoding/decoding when writing/reading remote files. If
+    possible use the conventions for Python 2 and 3.
+
+- Support `FTPFile.seek` and `FTPFile.tell` as far as it makes sense.
+
+- Clean up the code by using decorators (?)
+
+
+Ideas for future development:
+
+- See ticket system
+
+- Add `ftp_session` module containing session classes (e. g. for
+  passive mode connections)
+
+- WebDAV support?

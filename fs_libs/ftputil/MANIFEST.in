@@ -1,0 +1,6 @@
+include VERSION
+include ftputil/*.py
+
+include doc/*.txt doc/*.html
+
+include test/*.py

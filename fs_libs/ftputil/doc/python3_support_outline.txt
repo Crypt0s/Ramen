@@ -1,0 +1,136 @@
+What to do for Python 3 support
+===============================
+
+
+Improving unit tests
+    Review them before starting coding on them.
+        Will probably remind me of what's tricky.
+    Maybe this is the time (aka chance ;-) ) to clean up.
+    After reading first tests ...
+        I don't remember easily what all these tests were for, but I
+          think I can recall when I look at the code.
+            -> Add docstrings/comments to explain what the idea of
+              each respective test is.
+    Put custom session factory classes for certain tests before these
+      tests the session factories are used in.
+    Tests for ASCII/binary conversions certainly have to change. We're
+      going to use Python's usual line ending normalization. We don't
+      expect `\r` characters to be added during ASCII _reads_.
+
+
+Change certain methods to return the same string type that is passed in.
+    The following list contains only user-visible methods
+      or methods whose API is directly relevant for users.
+
+        host.listdir(self, path)
+        host.lstat(self, path, _exception_for_missing_path=True)
+        host.stat(self, path, _exception_for_missing_path=True)
+        host.walk(self, top, topdown=True, onerror=None)
+
+        host.path.abspath(self, path)
+        host.path.basename(path)
+        host.path.commonprefix(path_list)
+        host.path.dirname(path)
+        host.path.exists(path)
+        host.path.getmtime(path)
+        host.path.getsize(path)
+        host.path.isabs(path)
+        host.path.isdir(path)
+        host.path.isfile(path)
+        host.path.islink(path)
+        host.path.join(path1, path2, ...)
+        host.path.normcase(path)
+        host.path.normpath(path)
+        host.path.split(path)
+        host.path.splitdrive(path)
+        host.path.splitext(path)
+        host.path.walk(path, func, arg)
+
+        parser.ignores_line(self, line)
+        parser.parse_line(self, line, time_shift=0.0)
+
+        mock_ftplib.cwd(self, path)
+        mock_ftplib.dir(self, *args)
+        mock_ftplib.transfercmd(self, cmd)
+        mock_ftplib.voidcmd(self, cmd)
+        mock_ftplib.voidresp(self)
+
+    Can we somehow "generalize" unit tests?
+        I. e. we don't want to code the "same string type" logic when
+          testing each method.
+
+
+Which methods of the "normal" file system API accept byte strings,
+  unicode strings or either?
+    If the APIs are systematic, follow them for ftputil.
+    If the APIs aren't systematic, don't support exceptional cases,
+      e. g. only one method in a group of methods accepts byte
+      strings beside unicode strings.
+        Or support the exceptional cases only in a later ftputil
+          version.
+
+
+Normalize cache string type?
+    Does it make sense?
+        What encoding to use to automatically convert?
+        What to do if encoding to byte string isn't possible?
+            (i. e. when the unicode strings contains characters that
+              are invalid in the target encoding)
+    Local files use the value of `sys.getfilesystemencoding()` whereas
+      remote files - in ftplib - use latin1.
+        Is it possible to be consistent?
+            For what kind of "consistency"?
+    Different caches for byte string paths and unicode string paths?
+
+
+File object API
+    Files opened for reading
+        When opened in binary mode, return byte strings.
+        When opened in text mode, return unicode strings.
+            Apply encoding given in `open` on the fly.
+                Use helper classes in `io` module.
+    Files opened for writing
+        When opened in binary mode, accept only byte strings.
+        When opened in text mode, accept only unicode strings.
+            Allow byte strings during a "deprecation period"?
+                No:
+                    Do the simplest thing that could possibly work.
+                    Might rather confuse people.
+                    Might cause surprises when the "deprecation
+                      period" is over!
+            Apply encoding given in `open` on the fly.
+                Use helper classes in `io` module.
+    Deal consistently with local and remote files.
+        What does "consistent" mean/involve here?
+    How to deal with line ending conversion?
+        We don't know for certain whether the remote server is a Posix
+          or Windows machine.
+            -> This would suggest to use the line endings of the local
+              host when writing remote files.
+                -> But I don't think this is logical. We would get
+                  different remote files depending on the operating
+                  system of the client which accesses these files!
+                Always assume Posix or always assume Windows for the
+                  remote system?
+                    Let it depend on the returned listing format?
+                        Too subtle.
+                        What to do if we later move to using `MLSD`?
+        Is there a way to specify a desired line ending type when
+          using the `io` module?
+            Yes, there's the `newline` argument in `io.open`.
+        Probably it's better to let ftputil behave as for "regular"
+          file systems.
+            This also holds for remote file systems (NFS, CIFS).
+            So it should be ok to use Python conventions here; mounted
+              remote file systems are treated like local file systems.
+
+
+Provide user and password in `FTPHost` constructor as unicode strings?
+    Probably very important since the server will only see the bytes,
+      and an encoding problem will lead to a refused connection.
+    How does ftplib handle the encoding?
+
+
+Different methods for returning byte strings or unicode strings
+  (similar to `os.getcwd` vs. `os.getcwdu`)?
+    Later! (do the simplest thing that could possibly work)
