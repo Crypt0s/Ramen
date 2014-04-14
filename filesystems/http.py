@@ -9,7 +9,9 @@ import time
 import pdb
 
 # required
-settings = imp.load_source('settings','fs_settings/http.py')
+if __name__ != "__main__":
+    settings = imp.load_source('settings','fs_settings/http.py')
+
 product = 'http'
 
 class filesystem(persistent.Persistent):
@@ -50,7 +52,12 @@ class filesystem(persistent.Persistent):
         self.scanned.append(path)
 
         conn = httplib.HTTPConnection(self.host)
-        conn.request("GET", path)
+        if path == '/':
+            slash = ''
+        else:
+            slash = '/'
+
+        conn.request("GET", slash+path)
         r1 = conn.getresponse()
         response_handlers = {
             301:self.__redirect,
@@ -83,34 +90,44 @@ class filesystem(persistent.Persistent):
             urls.append(tag['src'])
         # OK, now see if the URL's match the target.
         # TODO: do we want to check if the url is on the same IP or not?
+        valid_urls = []
         for url in urls:
-            path = ''
-            if 'mailto:' in url[0:7]:
-                urls.remove(url)
-                continue
-            s_url = urlparse.urlsplit(url)
-            # Relative path, add additional info and reparse
-            # TODO: this could be written better
-            if s_url.netloc == '':
-                url = 'http://'+self.host+url
-                s_url = urlparse.urlsplit(url)
-                # TODO: all the url's are going to have ?'s in them!
-                path = s_url.path
-            # keep it http and keep it on-target
-            if self.host == s_url.netloc and 'http' == s_url.scheme and s_url.path:
-                path = s_url.path
-            try:
-                path = urllib.url2pathname(path)
-                path = urllib.pathname2url(path)
-                path = path + '?' + s_url.query
-            except:
-                # Must use that ISO format....for at least fark -- still testing
-                path = urllib.quote(urllib.unquote(path).encode('iso-8859-1'))
+            v_url = self.__validateURL(url)
+            if v_url is not None:
+                # See if it's not already marked for scanning
+                if v_url not in self.scanned and v_url not in self.to_scan:
+                    valid_urls.append(v_url)
+                    self.to_scan.append(v_url)
 
-            if path != '' and path != '?' and path not in self.scanned and path not in self.to_scan:
-                self.to_scan.append(path)
         print len(self.to_scan)
-        return (result.url,[],urls)
+        return (result.url,[],valid_urls)
+
+    def __validateURL(self,url):
+        # NO email addresses, please
+        if 'mailto:' in url[0:7]:
+            return None
+
+        s_url = urlparse.urlsplit(url)
+        # relative path
+        if s_url.netloc == '':
+            return url
+
+        # not on the same domain.
+        if s_url.netloc != self.host or s_url.scheme != 'http':
+            return None
+
+        # Build url query
+        try:
+            path = urllib.url2pathname(s_url.path)
+            path = urllib.pathname2url(s_url.path)
+            path = path + '?' + s_url.query
+        except:
+            # Must use that ISO format....for at least fark -- still testing
+            path = urllib.quote(urllib.unquote(path).encode('iso-8859-1'))
+
+        # strip "?" from the end
+        if path[-1] == '?':
+            return path[0:-1]          
 
     # follow redirects as long as they are within target scope
     def __redirect(self,r1):
@@ -244,7 +261,7 @@ class filesystem(persistent.Persistent):
 
 # little unit test-ish thing
 if __name__ == "__main__":
-    fs = filesystem('http://www.asrcfederal.com')
+    fs = filesystem('http://www.asdf.com')
     gen = fs.walk('/')
     while 1:
         try:

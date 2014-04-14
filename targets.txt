@@ -1,1 +1,1 @@
-ftp.FreeBSD.org ftp
+http://www.asdf.com/ http
